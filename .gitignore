@@ -1,0 +1,15 @@
+.npmignore
+
+.vscode/*
+node_modules/*
+dist/*
+data/*
+AzgaarData/*
+
+.replit
+*.nix
+
+package-lock.json
+
+*.png
+*.jpeg
