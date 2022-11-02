@@ -10,6 +10,7 @@ import chroma from 'chroma-js';
 import Shower from './Shower';
 import RiverMap from '../BuildingModel/MapContainerElements/Natural/RiverMap';
 import FluxRouteMap from '../BuildingModel/MapContainerElements/Natural/FluxRouteMap';
+import { IAPanzoom } from '../AbstractDrawing/APanzoom';
 
 type TBackground = 'h' | 'l';
 
@@ -20,8 +21,8 @@ export default class WaterShower extends Shower {
 		super(world, area, SIZE, /*folderSelected,*/ 'river');
 	}
 
-	drawRivers(background: TBackground, zoom = 0, center?: Point): void {
-		this.d.clear(zoom, center);
+	drawRivers(background: TBackground, pz?: IAPanzoom): string {
+    this.d.clear(pz);
 
 		// fondo
 		this.drawFondo(background);
@@ -31,11 +32,11 @@ export default class WaterShower extends Shower {
 			this.d.drawEdgeContainer(river, JEdgeToDrawEntryFunctions.fluxMedia())
 		})
 		this.d.drawMeridianAndParallels();
-		this.d.saveDrawFile(`${this.a}rivers`)
+		return this.d.saveDrawFile(`${this.a}rivers`)
 	}
 
-	drawWaterRoutes(color: string | 'random', background: TBackground, zoom: number = 0, center?: Point) {
-		this.d.clear(zoom, center);
+	drawWaterRoutes(color: string | 'random', background: TBackground, pz?: IAPanzoom): string {
+    this.d.clear(pz);
 		// fondo
 		this.drawFondo(background);
 
@@ -50,7 +51,7 @@ export default class WaterShower extends Shower {
 			})
 		})
 		this.d.drawMeridianAndParallels();
-		this.d.saveDrawFile(`${this.a}fluxRoutes`)
+		return this.d.saveDrawFile(`${this.a}fluxRoutes`)
 	}
 
 	private drawFondo(background: TBackground) {

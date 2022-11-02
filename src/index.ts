@@ -14,6 +14,8 @@ import RandomNumberGenerator from './BuildingModel/Geom/RandomNumberGenerator';
 import PriorityQueue from './BuildingModel/Geom/PriorityQueue';
 import JCellClimate from './BuildingModel/Voronoi/CellInformation/JCellClimate';
 import InitCultureMapGenerator from './GACServer/GACCultures/InitCultureMapGenerator';
+import chroma from 'chroma-js';
+import CellCost from './GACServer/GACCultures/CellCost';
 
 const mc = MapController.instance;
 
@@ -43,13 +45,14 @@ const azgaarFolder: string[] = [
   'Zia20', // 15
   'Deneia60', // 16
   'Ouvyia70', // 17
+  'Maletia80', // 18
 ];
-const folderSelected: string = azgaarFolder[10];
+const folderSelected: string = azgaarFolder[18];
 console.log('folder:', folderSelected);
 
 const tam = 3600;
 const SIZE: IPoint = { x: tam, y: tam / 2 };
-const AREA = 12100;
+const AREA = 2100;
 
 // testExec(SIZE, rootPath, folderSelected);
 
@@ -63,29 +66,40 @@ const cdm = mc.cdm;
 const isl = mc.naturalMap.islands[2];
 const pfr = cdm.getPanzoomForReg(isl);
 mc.showerManager.sh.drawHeight();
+mc.showerManager.sc.drawKoppen();
 mc.showerManager.sc.drawLifeZones();
+mc.showerManager.sc.drawPrecipMedia();
 
-cdm.clear(pfr.zoom, pfr.center);
-cdm.clear()
-cdm.drawBackground();
-cdm.drawCellContainer(mc.naturalMap.diagram, land())
 
 /********* */
+cdm.clear(pfr);
+cdm.clear()
+cdm.drawBackground();
+const colorScale: chroma.Scale = chroma.scale('Spectral').domain([1, 0]);
+cdm.drawCellContainer(mc.naturalMap.diagram, (c: JCell) => {
+  let color: string = '#45454545';
+  if (c.info.isLand) 
+    color = colorScale(CellCost.forInitCulture(c)).alpha(0.7).hex();
+  return {
+    fillColor: color,
+    strokeColor: color,
+  }
+})
 
-const icmg = new InitCultureMapGenerator(mc.naturalMap.diagram);
-const cultures = icmg.generate(mc.naturalMap);
+// const icmg = new InitCultureMapGenerator(mc.naturalMap.diagram);
+// const cultures = icmg.generate(mc.naturalMap);
 
-cdm.drawArr(cultures, 1)
-cdm.drawCellContainer(createICellContainer(icmg._initCells), colors({
-  fillColor: '#000015',
-  strokeColor: '#000015'
-}))
+// cdm.drawArr(cultures, 0.4)
+// cdm.drawCellContainer(createICellContainer(icmg._initCells), colors({
+//   fillColor: '#000015',
+//   strokeColor: '#000015'
+// }))
 cdm.drawMeridianAndParallels()
 console.log(cdm.saveDrawFile(`tessdrt${newDate.getMilliseconds()}`))
-cultures.forEach((cul: RegionMap, i: number) => {
-  console.log(i, ':', cul.area.toLocaleString('de-DE', {minimumFractionDigits: 2, maximumFractionDigits: 2}), 'km2 - cells:',
-  cul.cells.size, '- neigs cells', cul.getNeightboursCells().length)
-})
+// cultures.forEach((cul: RegionMap, i: number) => {
+//   console.log(i, ':', cul.area.toLocaleString('de-DE', {minimumFractionDigits: 2, maximumFractionDigits: 2}), 'km2 - cells:',
+//   cul.cells.size, '- neigs cells', cul.getNeightboursCells().length)
+// })
 
 /*
 CREAR LineMap

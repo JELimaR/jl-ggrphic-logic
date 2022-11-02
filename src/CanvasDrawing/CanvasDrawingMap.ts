@@ -84,8 +84,8 @@ export default class CanvasDrawingMap extends ADrawingMap<void, CanvasPanzoom> {
 		this.draw(list, ent);
 	}
 
-	clear(zoomValue = 0, center = {x: 0, y: 0}): void {
-		super.clear(zoomValue, center)
+	clear(pz?: IAPanzoom): void {
+		super.clear(pz);
 		this.context.clearRect(0, 0, this._cnvs.width, this._cnvs.height);
 	}
 

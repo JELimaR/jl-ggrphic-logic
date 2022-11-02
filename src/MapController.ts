@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { IAPanzoom } from './AbstractDrawing/APanzoom';
 import * as JCellToDrawEntryFunctions from './AbstractDrawing/JCellToDrawEntryFunctions';
 import { IPoint } from './BuildingModel/Geom/Point';
 import { ICellContainer, IEdgeContainer, IVertexContainer } from './BuildingModel/MapContainerElements/containerInterfaces';
@@ -50,14 +51,14 @@ export default class MapController {
 
   // azgaar folder selection
   getAzgaarWOptions(): string[] {
-    return AzgaarReaderData.getDirectories(rootPath + `/AzgaarData/`);
+    return AzgaarReaderData.getDirectories(rootPath + `/public/AzgaarData/`);
   }
   selectAzgaarW(folderSelected: string): void {
     if (this.getAzgaarWOptions().includes(folderSelected)) {
       this._folderSelected = folderSelected;
 
       folderGACConfig(rootPath, folderSelected);
-      CanvasDrawingMap.configPath(rootPath + `/img/${folderSelected}`);
+      CanvasDrawingMap.configPath(rootPath + `/public/img/${folderSelected}`);
       console.log('folder selected', this._folderSelected);
     } else {
       throw new Error(`no exist folder: ${folderSelected}`);
@@ -100,12 +101,12 @@ export default class MapController {
   }
 
   /**no es la idea */
-  drawHeightMap(zoom?: number, center?: IPoint): string {
-    return this.showerManager.sh.drawHeight(zoom, center);
+  drawHeightMap(pz?: IAPanzoom): string {
+    return this.showerManager.sh.drawHeight(pz);
   }
 
-  drawKoppenMap(zoom?: number, center?: IPoint): string {
-    return this.showerManager.sc.drawKoppen(zoom, center);
+  drawKoppenMap(pz?: IAPanzoom): string {
+    return this.showerManager.sc.drawKoppen(pz);
   }
 
   /** */

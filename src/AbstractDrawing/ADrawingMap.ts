@@ -204,7 +204,12 @@ export default abstract class ADrawingMap<I, P extends APanzoom> {
 	abstract draw(points: IPoint[], ent: IDrawingParameters): I;
 	abstract drawDot(p: IPoint, ent: IDrawingParameters, w: number): I;
 
-	clear(zoomValue: number = 0, center: IPoint = { x: 0, y: 0 }) {
+	clear(pz?: IAPanzoom) {
+		let zoomValue: number = 0, center: IPoint = { x: 0, y: 0 };
+		if (pz) {
+			zoomValue = pz.zoom;
+			center = pz.center;
+		}
 		this.setZoomValue(zoomValue);
 		this.setCenterpan(center);
 	}

@@ -10,18 +10,19 @@ import RegionMap from "../../BuildingModel/MapContainerElements/RegionMap";
 import PriorityQueue from "../../BuildingModel/Geom/PriorityQueue";
 import RandomNumberGenerator from "../../BuildingModel/Geom/RandomNumberGenerator";
 import JCellClimate from "../../BuildingModel/Voronoi/CellInformation/JCellClimate";
+import CellCost from "./CellCost";
 
 let totalAreaMedia = 0;
 
-const cellCostCalc = (cell: JCell): number => {
-	const randFunc = RandomNumberGenerator.makeRandomFloat(cell.id)
-	if (cell.info.cellHeight.heightType !== 'land')
-		return Infinity;
-	return (1 - cell.info.cellClimate.annualPrecip / JCellClimate.maxAnnual) * 0.5 +
-		Math.abs(cell.info.cellClimate.tmed - 10) / 40 * 0.5 + 0.01 * randFunc();
-}
+// const cellCostCalc = (cell: JCell): number => {
+// 	const randFunc = RandomNumberGenerator.makeRandomFloat(cell.id)
+// 	if (cell.info.cellHeight.heightType !== 'land')
+// 		return Infinity;
+// 	return (1 - cell.info.cellClimate.annualPrecip / JCellClimate.maxAnnual) * 0.5 +
+// 		Math.abs(cell.info.cellClimate.tmed - 10) / 40 * 0.5 + 0.01 * randFunc();
+// }
 
-const cellComparatorMinorCost = (a: JCell, b: JCell) => cellCostCalc(a) - cellCostCalc(b);
+const cellComparatorMinorCost = (a: JCell, b: JCell) => CellCost.forInitCulture(a) - CellCost.forInitCulture(b);
 
 export default class InitCultureMapGenerator extends MapGenerator<RegionMap[]> {
   /*private*/ _initCells: JCell[] = [];
@@ -104,7 +105,7 @@ export default class InitCultureMapGenerator extends MapGenerator<RegionMap[]> {
 		const dist = this.calcMinDistanceFromInitCells(cell);
 		// const value = (21000 - dist) / 21000;
 		const value = 2 * (21000 / (dist + 21000) - 0.5);
-		return value * 0.5 + cellCostCalc(cell) * 0.5;
+		return value * 0.5 + CellCost.forInitCulture(cell) * 0.5;
 	}
 
 	private calcMinDistanceFromInitCells(cell: JCell): number {

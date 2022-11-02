@@ -4,6 +4,7 @@ import * as JCellToDrawEntryFunctions from '../AbstractDrawing/JCellToDrawEntryF
 
 import JCell from "../BuildingModel/Voronoi/JCell";
 import { IPoint } from "../BuildingModel/Geom/Point";
+import { IAPanzoom } from "../AbstractDrawing/APanzoom";
 
 export default class HeightShower extends Shower {
 
@@ -11,16 +12,16 @@ export default class HeightShower extends Shower {
 		super(world, area, SIZE, /*folderSelected,*/ 'height');
 	}
 
-	drawHeight(zoom = 0, center?: IPoint): string {
-		this.d.clear(zoom, center);
+	drawHeight(pz?: IAPanzoom): string {
+    this.d.clear(pz);
 		this.d.drawBackground()
 		this.d.drawCellContainer(this.w.diagram, JCellToDrawEntryFunctions.heighLand(1))
 		this.d.drawMeridianAndParallels();
 		return this.d.saveDrawFile(`${this.a}heightLand`);
 	}
 
-	drawIslands(zoom = 0, center?: IPoint): void {
-		this.d.clear(zoom, center);
+	drawIslands(pz?: IAPanzoom): void {
+    this.d.clear(pz);
 		this.d.drawArr(this.w.islands, 1);
 		this.d.drawMeridianAndParallels();
 		this.d.saveDrawFile(`${this.a}islands`)

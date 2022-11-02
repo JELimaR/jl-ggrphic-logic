@@ -3,8 +3,8 @@
 .vscode/*
 node_modules/*
 dist/*
-data/*
-AzgaarData/*
+public/data/*
+public/AzgaarData/*
 
 .replit
 *.nix
@@ -13,3 +13,4 @@ package-lock.json
 
 *.png
 *.jpeg
+*.map

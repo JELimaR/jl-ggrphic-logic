@@ -6,6 +6,6 @@ import InformationFilesManager from "./InformationFilesManager";
 
 export default (root: string, folderSelected: string): void => {
 	// PNGDrawsDataManager.configPath(root + `/pngdraws`);
-	InformationFilesManager.configPath(root + `/data/${folderSelected}`);
-	AzgaarReaderData.configPath(root + `/AzgaarData/`, folderSelected);
+	InformationFilesManager.configPath(root + `/public/data/${folderSelected}`);
+	AzgaarReaderData.configPath(root + `/public/AzgaarData/`, folderSelected);
 }

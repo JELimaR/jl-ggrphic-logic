@@ -6,6 +6,7 @@ import JCell from "../BuildingModel/Voronoi/JCell";
 import { lifeZonesList, TKoppenSubType, TKoppenType } from "../BuildingModel/Voronoi/CellInformation/JCellClimate";
 import { IPoint } from "../BuildingModel/Geom/Point";
 import { inRange } from "../BuildingModel/Geom/basicGeometryFunctions";
+import { IAPanzoom } from '../AbstractDrawing/APanzoom';
 
 export default class ClimateShower extends Shower {
 
@@ -13,25 +14,25 @@ export default class ClimateShower extends Shower {
     super(world, area, SIZE, /*folderSelected,*/ 'climate');
   }
 
-  drawKoppen(zoom = 0, center?: IPoint): string {
-    this.d.clear(zoom, center);
+  drawKoppen(pz?: IAPanzoom): string {
+    this.d.clear(pz);
     this.d.drawBackground()
     this.d.drawCellContainer(this.w.diagram, JCellToDrawEntryFunctions.koppen(1))
     this.d.drawMeridianAndParallels();
     return this.d.saveDrawFile(`${this.a}koppen`);
   }
 
-  drawLifeZones(zoom = 0, center?: IPoint): string {
-    this.d.clear(zoom, center);
+  drawLifeZones(pz?: IAPanzoom): string {
+    this.d.clear(pz);
     this.d.drawBackground('#F2F2F2A2') // copiar a los otros
     this.d.drawCellContainer(this.w.diagram, JCellToDrawEntryFunctions.lifeZones(1))
     this.d.drawMeridianAndParallels();
     return this.d.saveDrawFile(`${this.a}lifeZones`);
   }
 
-  drawPrecipMonth(month: number, zoom = 0, center?: IPoint): string {
+  drawPrecipMonth(month: number, pz?: IAPanzoom): string {
     // monthArr.forEach((month: number) => {
-    this.d.clear(zoom, center);
+    this.d.clear(pz);
     // month = inRange(month, 1, 12);
     this.d.drawBackground()
     this.d.drawCellContainer(this.w.diagram, JCellToDrawEntryFunctions.precipitationMonth(month))
@@ -40,16 +41,15 @@ export default class ClimateShower extends Shower {
     // })
   }
 
-  drawPrecipMedia(zoom = 0, center?: IPoint): string {
-    this.d.clear(zoom, center);
+  drawPrecipMedia(pz?: IAPanzoom): string {
+    this.d.clear(pz);
     this.d.drawCellContainer(this.w.diagram, JCellToDrawEntryFunctions.precipitationMedia())
     this.d.drawMeridianAndParallels();
     return this.d.saveDrawFile(`${this.a}precipMedia`);
   }
 
-  drawTempMonth(month: number, zoom = 0, center?: IPoint): string {
-
-    this.d.clear(zoom, center);
+  drawTempMonth(month: number, pz?: IAPanzoom): string {
+    this.d.clear(pz);
     month = inRange(month, 1, 12);
     this.d.drawBackground()
     this.d.drawCellContainer(this.w.diagram, JCellToDrawEntryFunctions.temperatureMonth(month))
@@ -58,22 +58,22 @@ export default class ClimateShower extends Shower {
 
   }
 
-  drawTempMedia(zoom = 0, center?: IPoint): string {
-    this.d.clear(zoom, center);
+  drawTempMedia(pz?: IAPanzoom): string {
+    this.d.clear(pz);
     this.d.drawCellContainer(this.w.diagram, JCellToDrawEntryFunctions.temperatureMedia())
     this.d.drawMeridianAndParallels();
     return this.d.saveDrawFile(`${this.a}tempMedia`);
   }
 
-  drawAltitudinalBelts(zoom = 0, center?: IPoint): string {
-    this.d.clear(zoom, center);
+  drawAltitudinalBelts(pz?: IAPanzoom): string {
+    this.d.clear(pz);
     this.d.drawCellContainer(this.w.diagram, JCellToDrawEntryFunctions.altitudinalBelts(1))
     this.d.drawMeridianAndParallels();
     return this.d.saveDrawFile(`${this.a}altitudinalBelts`)
   }
 
-  drawHumidityProvinces(zoom = 0, center?: IPoint): string {
-    this.d.clear(zoom, center);
+  drawHumidityProvinces(pz?: IAPanzoom): string {
+    this.d.clear(pz);
     this.d.drawCellContainer(this.w.diagram, JCellToDrawEntryFunctions.humidityProvinces(1))
     this.d.drawMeridianAndParallels();
     return this.d.saveDrawFile(`${this.a}humidityProvinces`)
