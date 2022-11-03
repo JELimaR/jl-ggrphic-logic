@@ -70,7 +70,7 @@ export default class VoronoiDiagramCreator {
 
 			const diagram: Diagram = vor.compute(sites, bbox);
 			out = new JDiagram(diagram, { d: jd, a: AREA, s: subSitesData });
-			ifm.saveDiagramValues(out.getInterface(), AREA);
+			// ifm.saveDiagramValues(out.getInterface(), AREA);
 		}
 		console.timeEnd('compute sec')
 

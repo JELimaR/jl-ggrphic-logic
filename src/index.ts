@@ -47,12 +47,12 @@ const azgaarFolder: string[] = [
   'Ouvyia70', // 17
   'Maletia80', // 18
 ];
-const folderSelected: string = azgaarFolder[18];
+const folderSelected: string = azgaarFolder[10];
 console.log('folder:', folderSelected);
 
 const tam = 3600;
 const SIZE: IPoint = { x: tam, y: tam / 2 };
-const AREA = 2100;
+const AREA = 12100;
 
 // testExec(SIZE, rootPath, folderSelected);
 
@@ -95,7 +95,7 @@ cdm.drawCellContainer(mc.naturalMap.diagram, (c: JCell) => {
 //   strokeColor: '#000015'
 // }))
 cdm.drawMeridianAndParallels()
-console.log(cdm.saveDrawFile(`tessdrt${newDate.getMilliseconds()}`))
+console.log(cdm.saveDrawFile(`tessdrt`))
 // cultures.forEach((cul: RegionMap, i: number) => {
 //   console.log(i, ':', cul.area.toLocaleString('de-DE', {minimumFractionDigits: 2, maximumFractionDigits: 2}), 'km2 - cells:',
 //   cul.cells.size, '- neigs cells', cul.getNeightboursCells().length)
