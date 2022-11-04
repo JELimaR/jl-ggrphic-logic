@@ -16,6 +16,7 @@ import JCellClimate from './BuildingModel/Voronoi/CellInformation/JCellClimate';
 import InitCultureMapGenerator from './GACServer/GACCultures/InitCultureMapGenerator';
 import chroma from 'chroma-js';
 import CellCost from './GACServer/GACCultures/CellCost';
+import Menu from './Menu';
 
 const mc = MapController.instance;
 
@@ -27,25 +28,25 @@ console.log('root:', rootPath);
 // console.log(dirs)
 
 const azgaarFolder: string[] = [
-  'Latiyia30', // 0
-  'Boreland30', // 1
-  'Bakhoga40', // 2
-  'Betia40', // 3
-  'Vilesland40', // 4
-  'Braia100', // 5
-  'Toia100', // 6
-  'Morvar100', // 7
-  'Mont100', // 8
-  'Itri100', // 9
-  'Mones10', // 10
-  'Civaland1', // 11
-  'Shauland30', // 12
-  'Lenzkirch50', // 13
-  'Migny90', // 14
-  'Zia20', // 15
-  'Deneia60', // 16
-  'Ouvyia70', // 17
-  'Maletia80', // 18
+	'Latiyia30', // 0
+	'Boreland30', // 1
+	'Bakhoga40', // 2
+	'Betia40', // 3
+	'Vilesland40', // 4
+	'Braia100', // 5
+	'Toia100', // 6
+	'Morvar100', // 7
+	'Mont100', // 8
+	'Itri100', // 9
+	'Mones10', // 10
+	'Civaland1', // 11
+	'Shauland30', // 12
+	'Lenzkirch50', // 13
+	'Migny90', // 14
+	'Zia20', // 15
+	'Deneia60', // 16
+	'Ouvyia70', // 17
+	'Maletia80', // 18
 ];
 const folderSelected: string = azgaarFolder[10];
 console.log('folder:', folderSelected);
@@ -55,7 +56,7 @@ const SIZE: IPoint = { x: tam, y: tam / 2 };
 const AREA = 12100;
 
 // testExec(SIZE, rootPath, folderSelected);
-
+/*
 mc.selectAzgaarW(folderSelected);
 mc.createNaturalWorld(AREA, SIZE);
 
@@ -71,19 +72,19 @@ mc.showerManager.sc.drawLifeZones();
 mc.showerManager.sc.drawPrecipMedia();
 
 
-/********* */
+// ********* 
 cdm.clear(pfr);
 cdm.clear()
 cdm.drawBackground();
 const colorScale: chroma.Scale = chroma.scale('Spectral').domain([1, 0]);
 cdm.drawCellContainer(mc.naturalMap.diagram, (c: JCell) => {
-  let color: string = '#45454545';
-  if (c.info.isLand) 
-    color = colorScale(CellCost.forInitCulture(c)).alpha(0.7).hex();
-  return {
-    fillColor: color,
-    strokeColor: color,
-  }
+	let color: string = '#45454545';
+	if (c.info.isLand) 
+		color = colorScale(CellCost.forInitCulture(c)).alpha(0.7).hex();
+	return {
+		fillColor: color,
+		strokeColor: color,
+	}
 })
 
 // const icmg = new InitCultureMapGenerator(mc.naturalMap.diagram);
@@ -101,22 +102,6 @@ console.log(cdm.saveDrawFile(`tessdrt`))
 //   cul.cells.size, '- neigs cells', cul.getNeightboursCells().length)
 // })
 
-/*
-CREAR LineMap
-const pts: Point[] = [
-  new Point(132,92),
-  new Point(132, 75),
-  new Point(131,60),
-]
-
-cdm.clear()
-cdm.drawBackground()
-cdm.drawCellContainer(mc.naturalMap.diagram, heighLand())
-cdm.drawMeridianAndParallels();
-cdm.draw(pts, {fillColor: 'none', strokeColor: '#000000'});
-console.log(cdm.saveDrawFile('tessdrt'))
-*/
-
 // let arr: number[] = [];
 
 // arr[8] = 11;
@@ -126,5 +111,15 @@ console.log(cdm.saveDrawFile('tessdrt'))
 // arr.sort((a: number, b: number) => a-b);
 // arr.forEach((e: number, i: number) => console.log('index:', i, '- value:', e))
 // console.log(arr[5])
+*/
+
+const main = async () => {
+	
+	const menu = new Menu();
+	menu.run();
+}
+
+
+main();
 
 console.timeEnd('all')
