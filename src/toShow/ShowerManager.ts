@@ -2,7 +2,7 @@ import { IPoint } from "../BuildingModel/Geom/Point";
 import NaturalMap from "../BuildingModel/NaturalMap";
 import ClimateShower from "./ClimateShower";
 import HeightShower from "./HeightShower";
-import ShowTest from "./toShowTest";
+import TestShower from "./TestShower";
 import WaterShower from "./WaterShower";
 
 
@@ -10,7 +10,7 @@ export default class ShowerManager {
 	private _sc: ClimateShower | undefined;
 	private _sh: HeightShower | undefined;
 	private _sw: WaterShower | undefined;
-	private _st: ShowTest | undefined;
+	private _st: TestShower | undefined;
 
 	private _w: NaturalMap;
 	private _a: number;
@@ -42,9 +42,9 @@ export default class ShowerManager {
 		return this._sw;
 	}
 
-	get st(): ShowTest {
+	get st(): TestShower {
 		if (!this._st)
-			this._st = new ShowTest(this._w, this._a, this._z);
+			this._st = new TestShower(this._w, this._a, this._z);
 		return this._st;
 	}
 	

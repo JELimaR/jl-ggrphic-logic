@@ -12,6 +12,14 @@ export default class HeightShower extends Shower {
 		super(world, area, SIZE, /*folderSelected,*/ 'height');
 	}
 
+  drawLand(pz?: IAPanzoom): string {
+    this.d.clear(pz);
+		this.d.drawBackground()
+		this.d.drawCellContainer(this.w.diagram, JCellToDrawEntryFunctions.land(1))
+		this.d.drawMeridianAndParallels();
+		return this.d.saveDrawFile(`${this.a}land`);
+	}
+
 	drawHeight(pz?: IAPanzoom): string {
     this.d.clear(pz);
 		this.d.drawBackground()

@@ -320,10 +320,10 @@ export default class JCellClimate extends JCellGeneric {
 	}
 
 	// statics
-	private static _maxAnnual = -1;
+	private static _maxAnnualPrecip = -1;
 
-	static get maxAnnual(): number { return this._maxAnnual }
-	static set maxAnnual(maxAnnual: number) { this._maxAnnual = maxAnnual }
+	static get maxAnnualPrecip(): number { return this._maxAnnualPrecip }
+	static set maxAnnualPrecip(maxAnnualPrecip: number) { this._maxAnnualPrecip = maxAnnualPrecip }
 
 	static getTypeInformationKey(): TypeInformationKey {
 		return 'cellClimate';

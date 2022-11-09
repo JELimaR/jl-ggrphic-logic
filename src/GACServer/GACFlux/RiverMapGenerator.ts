@@ -126,7 +126,7 @@ export default class RiverMapGenerator extends MapGenerator<IRiverMapGeneratorOu
 
 		if (vFlux.fluxRouteIds.length == 0) {
 			vClimate.precipMonth.forEach((p: number, i: number) => {
-				currFluxArr[i] += (100 * (12 * p) - 10 * (vClimate.pumbral)) / JCellClimate.maxAnnual;
+				currFluxArr[i] += (100 * (12 * p) - 10 * (vClimate.pumbral)) / JCellClimate.maxAnnualPrecip;
 				if (currFluxArr[i] < 0) currFluxArr[i] = 0;
 			})
 		}

@@ -16,7 +16,10 @@ import JCellClimate from './BuildingModel/Voronoi/CellInformation/JCellClimate';
 import InitCultureMapGenerator from './GACServer/GACCultures/InitCultureMapGenerator';
 import chroma from 'chroma-js';
 import CellCost from './GACServer/GACCultures/CellCost';
-import Menu from './Menu';
+import Menu, { IMenuItem } from './frontApp/Menu';
+import initialScreens, {IStateInitialScreen} from './frontApp/Screens/initialScreens';
+import mainScreen from './frontApp/Screens/mainScreen';
+import devTest from './devTest';
 
 const mc = MapController.instance;
 
@@ -57,12 +60,7 @@ const AREA = 12100;
 
 // testExec(SIZE, rootPath, folderSelected);
 /*
-mc.selectAzgaarW(folderSelected);
-mc.createNaturalWorld(AREA, SIZE);
-
 mc.showerManager.sh.printMaxAndMinCellsHeight();
-
-const cdm = mc.cdm;
 
 const isl = mc.naturalMap.islands[2];
 const pfr = cdm.getPanzoomForReg(isl);
@@ -71,36 +69,7 @@ mc.showerManager.sc.drawKoppen();
 mc.showerManager.sc.drawLifeZones();
 mc.showerManager.sc.drawPrecipMedia();
 
-
 // ********* 
-cdm.clear(pfr);
-cdm.clear()
-cdm.drawBackground();
-const colorScale: chroma.Scale = chroma.scale('Spectral').domain([1, 0]);
-cdm.drawCellContainer(mc.naturalMap.diagram, (c: JCell) => {
-	let color: string = '#45454545';
-	if (c.info.isLand) 
-		color = colorScale(CellCost.forInitCulture(c)).alpha(0.7).hex();
-	return {
-		fillColor: color,
-		strokeColor: color,
-	}
-})
-
-// const icmg = new InitCultureMapGenerator(mc.naturalMap.diagram);
-// const cultures = icmg.generate(mc.naturalMap);
-
-// cdm.drawArr(cultures, 0.4)
-// cdm.drawCellContainer(createICellContainer(icmg._initCells), colors({
-//   fillColor: '#000015',
-//   strokeColor: '#000015'
-// }))
-cdm.drawMeridianAndParallels()
-console.log(cdm.saveDrawFile(`tessdrt`))
-// cultures.forEach((cul: RegionMap, i: number) => {
-//   console.log(i, ':', cul.area.toLocaleString('de-DE', {minimumFractionDigits: 2, maximumFractionDigits: 2}), 'km2 - cells:',
-//   cul.cells.size, '- neigs cells', cul.getNeightboursCells().length)
-// })
 
 // let arr: number[] = [];
 
@@ -113,13 +82,34 @@ console.log(cdm.saveDrawFile(`tessdrt`))
 // console.log(arr[5])
 */
 
-const main = async () => {
-	
-	const menu = new Menu();
-	menu.run();
+const manual: number = 0;
+const test: number = 1;
+
+const customInitState: IStateInitialScreen = {
+  area: AREA,
+  folder: folderSelected,
+  ok: true,
 }
 
+const app = async () => {
 
-main();
+  const initState = (manual === 0) ? customInitState : initialScreens();
+  console.log(initState)
+  if (initState.ok) {
+    mc.selectAzgaarW(initState.folder);
+    mc.createNaturalWorld(initState.area, SIZE)
+
+    if (test === 1) {
+      devTest();
+    } else {
+      const mainState = mainScreen(initState);
+      console.log(mainState)
+    }
+    
+  }
+
+}
+
+app();
 
 console.timeEnd('all')

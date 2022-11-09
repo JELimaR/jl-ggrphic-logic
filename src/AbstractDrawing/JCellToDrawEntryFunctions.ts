@@ -130,7 +130,7 @@ export const precipitationMedia = (alpha = 1) => {
 	const colorScale = chroma.scale('Spectral').domain([1, 0]);
 	return (cell: JCell) => {
 		const ccl = cell.info.cellClimate;
-		const val = Math.round(12*ccl.mediaPrecip / JCellClimate.maxAnnual * 20) / 20;
+		const val = Math.round(12*ccl.mediaPrecip / JCellClimate.maxAnnualPrecip * 20) / 20;
 		const color = colorScale(val).alpha(alpha).hex();
 		return {
 			fillColor: color,
@@ -143,7 +143,7 @@ export const precipitationMonth = (month: number) => {
 	const colorScale = chroma.scale('Spectral').domain([1, 0]);
 	return (cell: JCell) => {
 		const ccl = cell.info.cellClimate;
-		const val = Math.round(12*ccl.precipMonth[month - 1] / JCellClimate.maxAnnual * 20) / 20;
+		const val = Math.round(12*ccl.precipMonth[month - 1] / JCellClimate.maxAnnualPrecip * 20) / 20;
 		const color = colorScale(val).hex();
 		return {
 			fillColor: color,

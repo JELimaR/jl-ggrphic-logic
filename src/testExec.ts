@@ -16,7 +16,7 @@ import WaterShower from './toShow/WaterShower';
 import HeightShower from './toShow/HeightShower';
 import LineMap from './BuildingModel/MapContainerElements/LineMap';
 import JEdge from './BuildingModel/Voronoi/JEdge';
-import ShowTest from './toShow/toShowTest';
+import TestShower from './toShow/TestShower';
 import ShowerManager from './toShow/ShowerManager';
 import IslandMap from './BuildingModel/MapContainerElements/Natural/IslandMap';
 import DrainageBasinMap from './BuildingModel/MapContainerElements/Natural/DrainageBasinMap';

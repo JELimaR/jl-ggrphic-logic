@@ -53,7 +53,7 @@ export default class ClimateMapGenerator extends MapGenerator<void> {
 				if (annualMax < ccl.annualPrecip) annualMax = ccl.annualPrecip;
 			}
 		})
-		JCellClimate.maxAnnual = annualMax;
+		JCellClimate.maxAnnualPrecip = annualMax;
 
 	}
 
