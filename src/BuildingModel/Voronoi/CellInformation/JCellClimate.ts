@@ -115,7 +115,7 @@ export default class JCellClimate extends JCellGeneric {
 	 */
 	koppenType(): TKoppenType | 'O' {
 		if (!this.cell.info.isLand) return 'O';
-		// if (this.tmax < 10) return 'E'; // este no es el primero
+		if (this.tmax < 10) return 'E'; // este no es el primero
 		else if (this.annualPrecip < 1.0 * this.pumbral) return 'B'; //if (this.annualPrecip < 1.2 * this.pumbral) return 'B';
 		else if (this.tmin > 18) return 'A';
 		else if (this.tmax >= 10 && this.tmin > 0) return 'C'
@@ -180,10 +180,10 @@ export default class JCellClimate extends JCellGeneric {
 			// B
 			case 'B':
 				if (this.annualPrecip < 0.5 * this.pumbral) { //(this.mediaPrecip < .5 * this.pumbral) {
-					if (this.tmed >= 15) return 'BWh' //if (this.tmed >= 18) return 'BWh'
+					if (this.tmed >= 16) return 'BWh' //if (this.tmed >= 18) return 'BWh'
 					else return 'BWk'
 				} else {
-					if (this.tmed >= 15) return 'BSh'// if (this.tmed >= 18) return 'BSh'
+					if (this.tmed >= 16) return 'BSh'// if (this.tmed >= 18) return 'BSh'
 					else return 'BSk'
 				}
 			// C
@@ -385,7 +385,9 @@ export type TypeLifeZoneKey =
   | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30
   | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38;
 
-export const lifeZonesList: {[key in TypeLifeZoneKey]: ILifeZone} = {
+export type TLifeZoneObject<T> = {[key in TypeLifeZoneKey]: T}
+
+export const lifeZonesList: TLifeZoneObject<ILifeZone> = {
 	1: { id: 1, desc: 'Desierto polar', desc2: 'Polar desert', color: '#FFFFFF' },
 	2: { id: 2, desc: 'Tundra seca', desc2: 'Subpolar dry tundra', color: '#808080' },
 	3: { id: 3, desc: 'Tundra húmeda', desc2: 'Subpolar moist tundra', color: '#608080' },
@@ -435,7 +437,7 @@ export const lifeZonesList: {[key in TypeLifeZoneKey]: ILifeZone} = {
 		TAIGA				#CCD4BB
 		SHRUBLAND			#C4CCBB
 		TEMPERATE DESERT		#E4E8CA
-		TEMPERATE RAIN FORSET		#A4C4A8
+		TEMPERATE RAIN FOREST		#A4C4A8
 		TEMPERATE DECIDUOUS FOREST	#B4C9A9
 		GRASSLAND			#C4D4AA
 		TEMPERATE DESERT		#E4E8CA

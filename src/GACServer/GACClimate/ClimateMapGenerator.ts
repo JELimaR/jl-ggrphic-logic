@@ -20,7 +20,6 @@ export default class ClimateMapGenerator extends MapGenerator<void> {
 	}
 
 	generate(): void {
-		// super.generate();
 		const ifm = InformationFilesManager.instance;
 
 		let climateData: IJCellClimateInfo[] = ifm.loadMapElementData<IJCellClimateInfo, JCellClimate>(this.diagram.secAreaProm, JCellClimate.getTypeInformationKey());
