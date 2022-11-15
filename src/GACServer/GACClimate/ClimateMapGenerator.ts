@@ -23,7 +23,6 @@ export default class ClimateMapGenerator extends MapGenerator<void> {
 		// super.generate();
 		const ifm = InformationFilesManager.instance;
 
-		// let climateData: IJCellClimateInfo[] = dataInfoManager.loadCellsClimate(this.diagram.secAreaProm);
 		let climateData: IJCellClimateInfo[] = ifm.loadMapElementData<IJCellClimateInfo, JCellClimate>(this.diagram.secAreaProm, JCellClimate.getTypeInformationKey());
 		const isLoaded: boolean = climateData.length !== 0;
 		if (!isLoaded) {
@@ -39,21 +38,20 @@ export default class ClimateMapGenerator extends MapGenerator<void> {
 		if (!isLoaded) {
 			console.log('smooth climate data')
 			this.smoothData();
-			// dataInfoManager.saveCellsClimate(this.diagram.cells, this.diagram.secAreaProm);
 			const climateArr: JCellClimate[] = [...this.diagram.cells.values()].map((cell: JCell) => cell.info.cellClimate)
 			ifm.saveMapElementData<IJCellClimateInfo, JCellClimate>(climateArr, this.diagram.secAreaProm, JCellClimate.getTypeInformationKey());
 		}
 
 		this.setVertexInfo();
 
-		let annualMax = 0;
+		let maxAnnualPrecip = 0;
 		this.diagram.forEachCell((cell: JCell) => {
 			const ccl = cell.info.cellClimate;
 			if (ccl.koppenSubType() !== 'O' && ccl.koppenType() !== 'O') {
-				if (annualMax < ccl.annualPrecip) annualMax = ccl.annualPrecip;
+				if (maxAnnualPrecip < ccl.annualPrecip) maxAnnualPrecip = ccl.annualPrecip;
 			}
 		})
-		JCellClimate.maxAnnualPrecip = annualMax;
+		JCellClimate.maxAnnualPrecip = maxAnnualPrecip;
 
 	}
 

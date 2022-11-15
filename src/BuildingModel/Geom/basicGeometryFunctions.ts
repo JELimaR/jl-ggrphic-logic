@@ -35,6 +35,16 @@ export const inRange = (value: number, minimo: number, maximo: number): number =
 	return out;
 }
 
+export const inDiscreteClasses = (value: number, classesCant: number, pow: number = 1): number => {
+
+  classesCant = Math.round(classesCant);
+  let out: number = inRange(value, 0, 1);
+  out = Math.pow(out, pow)
+  out = Math.round(out*classesCant)/classesCant;
+
+  return out;
+}
+
 export const generateShape = (center: Point, rad: number, m: number): Point[] => {
 
 	const randf: () => number = RandomNumberGenerator.makeRandomFloat(center.x * center.y);
