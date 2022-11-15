@@ -39,7 +39,7 @@ export default (): void => {
   cdm.drawMeridianAndParallels()
   console.log(cdm.saveDrawFile(`forInitCulture`))
 
-  // mc.showerManager.sc.drawKoppen();
+  mc.showerManager.sc.drawKoppen();
 
   // console.log(mc.showerManager.sc.drawHumidityProvinces())
 
