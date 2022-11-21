@@ -14,3 +14,4 @@ package-lock.json
 *.png
 *.jpeg
 *.map
+*.jdat
