@@ -82,7 +82,7 @@ export default class CellCost {
   
   static tempCost(cell: JCell, temp: number): number {
     let out: number = Math.abs(cell.info.cellClimate.tmed - temp) / (65 - temp);
-    out = inRange(out, 0, 1) ** 2;
+    out = inRange(out, 0, 1) ** 1.5;
     return out;
   }
 }

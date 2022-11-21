@@ -5,6 +5,7 @@ import CellCost from "./GACServer/GACCultures/CellCost";
 import MapController from "./MapController";
 import chroma from 'chroma-js';
 import { inDiscreteClasses } from "./BuildingModel/Geom/basicGeometryFunctions";
+import JVertex from './BuildingModel/Voronoi/JVertex';
 
 const mc = MapController.instance;
 const rootPath = path.resolve(path.dirname('') + '/');
@@ -48,6 +49,12 @@ export default (): void => {
   //   cul.cells.size, '- neigs cells', cul.getNeightboursCells().length)
   // })
 
+  estadisticasKoppenVSLifeZone();
+  datosDiagram();
+}
+
+
+const estadisticasKoppenVSLifeZone = (): void => {
   let printString: string = '';
 
   mc.naturalMap.diagram.forEachCell((cell: JCell) => {
@@ -63,8 +70,39 @@ export default (): void => {
       + '\t' + Math.round(cc.precipSemCalido)  + '\t' +  Math.round(cc.precipSemFrio)
       + '\t' + Math.round(cc.annualPrecip)
       + '\t' + Math.round(cell.info.cellHeight.heightInMeters)
-      + '\t' + Math.round(cell.areaSimple*10)/10 + '\n';
+      + '\t' + Math.round(cell.areaSimple*10)/10
+      + '\t' + Math.round(Math.abs(cell.site.point.y))
+      + '\n';
     }
   })
-  fs.writeFileSync(rootPath + '/data.json', printString)
+
+  fs.writeFileSync(rootPath + '/estadisticasKoppenVSLifeZone.jdat', printString);
+}
+
+const datosDiagram = (): void => {
+  let printString: string = '';
+
+  const isCellCoast = (cell: JCell): boolean => {
+    let out: boolean = false;
+    mc.naturalMap.diagram.getVerticesAssociated(cell).forEach((v: JVertex) => {
+      out = out || v.info.vertexHeight.heightType == 'coast';
+    })
+    return out;
+  }
+
+  mc.naturalMap.diagram.forEachCell((cell: JCell) => {
+    if (cell.info.isLand) {
+      const ch = cell.info.cellHeight;
+      printString += cell.id
+      // + '\t' + cell.neighborsId
+      + '\t' + `${isCellCoast(cell) ? 'coast' : 'none'}`
+
+
+      + '\t' + Math.round(ch.heightInMeters)
+      + '\t' + Math.round(cell.areaSimple*10)/10
+      + '\n';
+    }
+  })
+
+  fs.writeFileSync(rootPath + '/datosDiagram.jdat', printString);
 }

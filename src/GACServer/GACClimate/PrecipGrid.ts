@@ -5,6 +5,7 @@ import DataGrid from "../GACGrid/DataGrid";
 import PressureGrid from "./PressureGrid";
 import TempGrid from "./TempGrid";
 import WindSimulate, { IPrecipDataGenerated } from "./WindSimulator";
+import { getArrayOfN } from "../../BuildingModel/Geom/basicGeometryFunctions";
 
 export interface IPrecipData {
 	precip: number[];
@@ -67,10 +68,7 @@ export default class PrecipGrid extends DataGrid<IPrecipData> {
 
 		this.grid.forEachPoint((gp: GridPoint, cidx: number, ridx: number) => {
 			if (!dout[cidx]) dout[cidx] = [];
-			const precipArr: number[] = [
-				0, 0, 0, 0,
-				0, 0, 0, 0,
-				0, 0, 0, 0];
+			const precipArr: number[] = getArrayOfN(12, 0);
 			const neigs: GridPoint[] = this.grid.getGridPointsInWindowGrade(gp.point, 5)
 			neigs.forEach((gpw: GridPoint) => {
 				precipArr.forEach((_v: number, mi: number) => {
