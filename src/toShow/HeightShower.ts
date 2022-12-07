@@ -3,7 +3,7 @@ import Shower from "./Shower";
 import * as JCellToDrawEntryFunctions from '../AbstractDrawing/JCellToDrawEntryFunctions';
 
 import JCell from "../BuildingModel/Voronoi/JCell";
-import { IPoint } from "../BuildingModel/Geom/Point";
+import { IPoint } from "../BuildingModel/Math/Point";
 import { IAPanzoom } from "../AbstractDrawing/APanzoom";
 
 export default class HeightShower extends Shower {

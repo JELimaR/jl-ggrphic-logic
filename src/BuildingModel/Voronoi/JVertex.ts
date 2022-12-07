@@ -1,5 +1,5 @@
 /* eslint-disable no-extra-boolean-cast */
-import Point, { IPoint } from '../Geom/Point';
+import Point, { IPoint } from '../Math/Point';
 import JVertexInformation from './VertexInformation/JVertexInformation';
 import JEdge from "./JEdge";
 

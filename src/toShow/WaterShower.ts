@@ -2,7 +2,7 @@
 import * as JCellToDrawEntryFunctions from '../AbstractDrawing/JCellToDrawEntryFunctions';
 import * as JEdgeToDrawEntryFunctions from '../AbstractDrawing/JEdgeToDrawEntryFunctions';
 
-import Point, { IPoint } from '../BuildingModel/Geom/Point';
+import Point, { IPoint } from '../BuildingModel/Math/Point';
 import NaturalMap from '../BuildingModel/NaturalMap';
 
 import JVertex from '../BuildingModel/Voronoi/JVertex';

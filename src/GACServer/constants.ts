@@ -3,6 +3,7 @@
 export const GRAN = 2;
 export const GRAD2RAD = Math.PI / 180;
 export const RAD2GRAD = 180 / Math.PI;
+export const FLUXLIMITPARAM = 1/2000;
 
 // ver donde va
 export type TypeMonthArr<T> = {

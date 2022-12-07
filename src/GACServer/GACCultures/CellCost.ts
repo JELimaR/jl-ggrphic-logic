@@ -1,5 +1,5 @@
-import { inRange } from "../../BuildingModel/Geom/basicGeometryFunctions";
-import RandomNumberGenerator from "../../BuildingModel/Geom/RandomNumberGenerator";
+import { inRange } from "../../BuildingModel/Math/basicMathFunctions";
+import RandomNumberGenerator from "../../BuildingModel/Math/RandomNumberGenerator";
 import JCellClimate, { TLifeZoneObject, TKoppenSubTypeObject } from "../../BuildingModel/Voronoi/CellInformation/JCellClimate";
 import JCell from "../../BuildingModel/Voronoi/JCell";
 

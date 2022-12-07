@@ -1,4 +1,4 @@
-import Point from "../../BuildingModel/Geom/Point";
+import Point from "../../BuildingModel/Math/Point";
 import Grid from "./Grid";
 
 export default abstract class DataGrid<D> {

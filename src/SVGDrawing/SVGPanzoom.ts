@@ -1,5 +1,5 @@
 import APanzoom from '../AbstractDrawing/APanzoom';
-import { IPoint } from '../BuildingModel/Geom/Point';
+import { IPoint } from '../BuildingModel/Math/Point';
 
 export default class SVGPanzoom extends APanzoom {
 	constructor(size: IPoint) {

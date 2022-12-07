@@ -1,11 +1,11 @@
 /* eslint-disable no-extra-boolean-cast */
-import Point from '../Geom/Point';
-import Triangle from '../Geom/Triangle';
+import Point from '../Math/Point';
+import Triangle from '../Math/Triangle';
 import JEdge from './JEdge';
 import JHalfEdge, { IJHalfEdgeInfo } from './JHalfEdge';
 import JSite, { IJSiteInfo } from './JSite';
 import JCellInformation from './CellInformation/JCellInformation';
-import turf from '../Geom/turf';
+import turf from '../Math/turf';
 
 export interface IJCellInfo {
   site: IJSiteInfo,

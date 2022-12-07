@@ -1,11 +1,11 @@
 import { calcCoriolisForce, calcMovementState, IMovementState } from "./windSimulatorFunctions";
 import { GRAN } from "../constants";
-import Point from "../../BuildingModel/Geom/Point";
+import Point from "../../BuildingModel/Math/Point";
 import Grid from "../GACGrid/Grid";
 import GridPoint from "../GACGrid/GridPoint";
 import PressureGrid, { PressureData } from "./PressureGrid";
 import TempGrid from "./TempGrid";
-import { getPointInValidCoords, getArrayOfN } from "../../BuildingModel/Geom/basicGeometryFunctions";
+import { getPointInValidCoords, getArrayOfN } from "../../BuildingModel/Math/basicMathFunctions";
 
 const sat = 8000;
 const roz = 0.71;

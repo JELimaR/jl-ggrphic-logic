@@ -1,6 +1,6 @@
 
 import CanvasDrawingMap from "../CanvasDrawing/CanvasDrawingMap";
-import { IPoint } from "../BuildingModel/Geom/Point";
+import { IPoint } from "../BuildingModel/Math/Point";
 import NaturalMap from "../BuildingModel/NaturalMap";
 
 export default abstract class Shower {

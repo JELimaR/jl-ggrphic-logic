@@ -1,5 +1,5 @@
 import APanzoom from "../AbstractDrawing/APanzoom";
-import Point, { IPoint } from "../BuildingModel/Geom/Point";
+import Point, { IPoint } from "../BuildingModel/Math/Point";
 
 export default class CanvasPanzoom extends APanzoom {
 

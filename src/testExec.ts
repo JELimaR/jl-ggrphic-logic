@@ -5,7 +5,7 @@ import * as JCellToDrawEntryFunctions from './AbstractDrawing/JCellToDrawEntryFu
 import * as JEdgeToDrawEntryFunctions from './AbstractDrawing/JEdgeToDrawEntryFunctions';
 import CanvasDrawingMap from './CanvasDrawing/CanvasDrawingMap'
 
-import Point, { IPoint } from './BuildingModel/Geom/Point';
+import Point, { IPoint } from './BuildingModel/Math/Point';
 import NaturalMap from './BuildingModel/NaturalMap';
 import RegionMap from './BuildingModel/MapContainerElements/RegionMap';
 import JCell from './BuildingModel/Voronoi/JCell';
@@ -20,7 +20,7 @@ import TestShower from './toShow/TestShower';
 import ShowerManager from './toShow/ShowerManager';
 import IslandMap from './BuildingModel/MapContainerElements/Natural/IslandMap';
 import DrainageBasinMap from './BuildingModel/MapContainerElements/Natural/DrainageBasinMap';
-import RandomNumberGenerator from './BuildingModel/Geom/RandomNumberGenerator';
+import RandomNumberGenerator from './BuildingModel/Math/RandomNumberGenerator';
 import JDiagram, { LoaderDiagram } from './BuildingModel/Voronoi/JDiagram';
 import RiverMap from './BuildingModel/MapContainerElements/Natural/RiverMap';
 import NaturalMapCreatorServer from './GACServer/NaturalMapCreatorServer';

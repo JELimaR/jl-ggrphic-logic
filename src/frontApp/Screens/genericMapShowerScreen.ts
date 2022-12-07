@@ -1,5 +1,5 @@
 import { IAPanzoom } from "../../AbstractDrawing/APanzoom";
-import { inRange } from "../../BuildingModel/Geom/basicGeometryFunctions";
+import { inRange } from "../../BuildingModel/Math/basicMathFunctions";
 import MapController from "../../MapController";
 import Menu, { IMenuItem } from "../Menu";
 import temporalMenuScreen from "./temporalMenuScreen";

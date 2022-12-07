@@ -7,8 +7,8 @@ import JVertexHeight, { IJVertexHeightInfo } from "../../BuildingModel/Voronoi/V
 import MapGenerator from "../MapGenerator";
 import JCell from "../../BuildingModel/Voronoi/JCell";
 import JVertex from "../../BuildingModel/Voronoi/JVertex";
-import RandomNumberGenerator from "../../BuildingModel/Geom/RandomNumberGenerator";
-import Point from "../../BuildingModel/Geom/Point";
+import RandomNumberGenerator from "../../BuildingModel/Math/RandomNumberGenerator";
+import Point from "../../BuildingModel/Math/Point";
 import AzgaarReaderData from "../../DataFileLoadAndSave/AzgaarReaderData";
 
 export default class HeightMapGenerator extends MapGenerator<void> {

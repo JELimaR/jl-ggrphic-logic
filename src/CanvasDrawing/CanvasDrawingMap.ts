@@ -4,7 +4,7 @@ import ADrawingMap from '../AbstractDrawing/ADrawingMap';
 import { IAPanzoom } from '../AbstractDrawing/APanzoom';
 import IDrawingParameters from '../AbstractDrawing/IDrawingParameters';
 
-import Point, { IPoint } from '../BuildingModel/Geom/Point';
+import Point, { IPoint } from '../BuildingModel/Math/Point';
 import RegionMap from '../BuildingModel/MapContainerElements/RegionMap';
 import CanvasPanzoom from './CanvasPanzoom';
 

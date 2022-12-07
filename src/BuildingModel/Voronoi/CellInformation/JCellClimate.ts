@@ -1,6 +1,6 @@
 /* eslint-disable no-case-declarations */
 /* eslint-disable no-irregular-whitespace */
-import { inRange, number2Precition } from "../../Geom/basicGeometryFunctions";
+import { inRange, number2Precition } from "../../Math/basicMathFunctions";
 import { TypeInformationKey } from "../../TypeInformationKey";
 import JCell from "../JCell";
 import JCellGeneric, { IJCellGenericInfo } from "./JCellGeneric";

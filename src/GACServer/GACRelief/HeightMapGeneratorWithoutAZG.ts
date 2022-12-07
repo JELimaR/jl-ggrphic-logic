@@ -1,7 +1,7 @@
 /*import OCanvas from './OCanvas'
-import JPoint, { JVector } from './Geom/JPoint';
+import JPoint, { JVector } from './Math/JPoint';
 import VoronoiDiagramMapCreator from './Voronoi/VoronoiDiagramMapCreator';
-import RandomNumberGenerator from './Geom/RandomNumberGenerator'
+import RandomNumberGenerator from './Math/RandomNumberGenerator'
 import VorDiagram from './Voronoi/VorDiagram';
 import VorPolygon from './Voronoi/VorPolygon';
 import IslandCenters from './CentersGenerator';

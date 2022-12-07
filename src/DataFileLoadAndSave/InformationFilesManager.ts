@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { IPoint } from '../BuildingModel/Geom/Point';
+import { IPoint } from '../BuildingModel/Math/Point';
 import MapElement from '../BuildingModel/MapElement';
 import { GRAN } from '../GACServer/constants';
 import GridPoint, { IGridPointInfo } from '../GACServer/GACGrid/GridPoint';

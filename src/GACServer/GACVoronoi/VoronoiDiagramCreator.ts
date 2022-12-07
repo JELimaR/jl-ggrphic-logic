@@ -1,6 +1,6 @@
 import { Voronoi, BoundingBox, Site, Diagram } from 'voronoijs';
 import InformationFilesManager from '../../DataFileLoadAndSave/InformationFilesManager';
-import { IPoint } from '../../BuildingModel/Geom/Point';
+import { IPoint } from '../../BuildingModel/Math/Point';
 import JDiagram, { LoaderDiagram } from '../../BuildingModel/Voronoi/JDiagram';
 import VoronoiSitesGenerator from './VoronoiSitesGenerator';
 

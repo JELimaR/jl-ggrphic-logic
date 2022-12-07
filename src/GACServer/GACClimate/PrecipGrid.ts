@@ -5,7 +5,7 @@ import DataGrid from "../GACGrid/DataGrid";
 import PressureGrid from "./PressureGrid";
 import TempGrid from "./TempGrid";
 import WindSimulate, { IPrecipDataGenerated } from "./WindSimulator";
-import { getArrayOfN } from "../../BuildingModel/Geom/basicGeometryFunctions";
+import { getArrayOfN } from "../../BuildingModel/Math/basicMathFunctions";
 
 export interface IPrecipData {
 	precip: number[];

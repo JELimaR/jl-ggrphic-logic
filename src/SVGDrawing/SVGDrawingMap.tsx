@@ -1,6 +1,6 @@
 import ADrawingMap from "../AbstractDrawing/ADrawingMap";
 import IDrawingParameters from "../AbstractDrawing/IDrawingParameters";
-import { IPoint } from "../BuildingModel/Geom/Point";
+import { IPoint } from "../BuildingModel/Math/Point";
 import SVGPanzoom from "./SVGPanzoom";
 
 

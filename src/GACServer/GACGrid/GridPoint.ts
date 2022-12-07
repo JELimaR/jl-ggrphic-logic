@@ -1,6 +1,6 @@
-import { inRange } from "../../BuildingModel/Geom/basicGeometryFunctions";
+import { inRange } from "../../BuildingModel/Math/basicMathFunctions";
 import { GRAN } from "../constants";
-import Point from "../../BuildingModel/Geom/Point";
+import Point from "../../BuildingModel/Math/Point";
 import JCell from "../../BuildingModel/Voronoi/JCell";
 
 export interface IGridPointInfo {

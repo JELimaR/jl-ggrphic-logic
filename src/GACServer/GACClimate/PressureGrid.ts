@@ -3,7 +3,7 @@
 /* eslint-disable no-extra-boolean-cast */
 import { calcFieldInPoint } from "./pressureGridFunctions";
 import InformationFilesManager from "../../DataFileLoadAndSave/InformationFilesManager";
-import Point from "../../BuildingModel/Geom/Point";
+import Point from "../../BuildingModel/Math/Point";
 import Grid from "../GACGrid/Grid";
 import GridPoint from "../GACGrid/GridPoint";
 import DataGrid from "../GACGrid/DataGrid";

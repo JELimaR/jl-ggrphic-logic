@@ -1,5 +1,5 @@
 import readlineSync from 'readline-sync';
-import { inRange } from '../BuildingModel/Geom/basicGeometryFunctions';
+import { inRange } from '../BuildingModel/Math/basicMathFunctions';
 
 const MenuItemExit: IMenuItem = {
 	name: 'Exit',

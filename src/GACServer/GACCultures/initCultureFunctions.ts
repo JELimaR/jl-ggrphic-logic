@@ -1,4 +1,4 @@
-import RandomNumberGenerator from "../../BuildingModel/Geom/RandomNumberGenerator";
+import RandomNumberGenerator from "../../BuildingModel/Math/RandomNumberGenerator";
 import JCellClimate from "../../BuildingModel/Voronoi/CellInformation/JCellClimate";
 import JCell from "../../BuildingModel/Voronoi/JCell";
 

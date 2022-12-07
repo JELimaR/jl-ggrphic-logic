@@ -1,4 +1,4 @@
-import { number2Precition } from "../../Geom/basicGeometryFunctions";
+import { number2Precition } from "../../Math/basicMathFunctions";
 import { TypeInformationKey } from "../../TypeInformationKey";
 import JVertex from "../JVertex";
 import JVertexGeneric, { IJVertexGenericInfo } from "./JVertexGeneric";

@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { number2Precition } from '../BuildingModel/Geom/basicGeometryFunctions';
+import { number2Precition } from '../BuildingModel/Math/basicMathFunctions';
 import { AzgaarFullData, AzgaarCell } from './FullDataTypes';
 
 const SIZE = {

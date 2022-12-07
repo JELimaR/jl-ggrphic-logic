@@ -3,12 +3,12 @@ import JDiagram from "../../BuildingModel/Voronoi/JDiagram";
 import InformationFilesManager from '../../DataFileLoadAndSave/InformationFilesManager';
 import JCell from "../../BuildingModel/Voronoi/JCell";
 import MapGenerator from "../MapGenerator";
-import Point from "../../BuildingModel/Geom/Point";
+import Point from "../../BuildingModel/Math/Point";
 import NaturalMap from "../../BuildingModel/NaturalMap";
 import IslandMap from "../../BuildingModel/MapContainerElements/Natural/IslandMap";
 import RegionMap from "../../BuildingModel/MapContainerElements/RegionMap";
-import PriorityQueue from "../../BuildingModel/Geom/PriorityQueue";
-import RandomNumberGenerator from "../../BuildingModel/Geom/RandomNumberGenerator";
+import PriorityQueue from "../../BuildingModel/Math/PriorityQueue";
+import RandomNumberGenerator from "../../BuildingModel/Math/RandomNumberGenerator";
 import JCellClimate from "../../BuildingModel/Voronoi/CellInformation/JCellClimate";
 import CellCost from "./CellCost";
 

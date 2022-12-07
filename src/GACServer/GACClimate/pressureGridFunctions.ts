@@ -1,4 +1,4 @@
-import Point from "../../BuildingModel/Geom/Point";
+import Point from "../../BuildingModel/Math/Point";
 
 interface IPressureZone {
 	mag: number;

@@ -1,8 +1,8 @@
 import { Site } from 'voronoijs';
 import AzgaarReaderData from '../../DataFileLoadAndSave/AzgaarReaderData';
 import InformationFilesManager from '../../DataFileLoadAndSave/InformationFilesManager';
-import { IPoint } from '../../BuildingModel/Geom/Point';
-import RandomNumberGenerator from '../../BuildingModel/Geom/RandomNumberGenerator';
+import { IPoint } from '../../BuildingModel/Math/Point';
+import RandomNumberGenerator from '../../BuildingModel/Math/RandomNumberGenerator';
 import JDiagram from '../../BuildingModel/Voronoi/JDiagram';
 
 const XDIF = 360;

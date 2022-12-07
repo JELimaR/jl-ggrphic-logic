@@ -1,4 +1,4 @@
-import { IPoint } from "../BuildingModel/Geom/Point";
+import { IPoint } from "../BuildingModel/Math/Point";
 import NaturalMap from "../BuildingModel/NaturalMap";
 import ClimateShower from "./ClimateShower";
 import HeightShower from "./HeightShower";

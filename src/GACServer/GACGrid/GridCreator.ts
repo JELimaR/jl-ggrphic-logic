@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import JCell from '../../BuildingModel/Voronoi/JCell';
 import JDiagram from '../../BuildingModel/Voronoi/JDiagram';
-import Point from '../../BuildingModel/Geom/Point';
+import Point from '../../BuildingModel/Math/Point';
 import { GRAN } from '../constants'
 import InformationFilesManager from '../../DataFileLoadAndSave/InformationFilesManager';
 import Grid from './Grid';

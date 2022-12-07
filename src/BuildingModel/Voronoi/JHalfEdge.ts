@@ -1,5 +1,5 @@
 
-import Point from '../Geom/Point';
+import Point from '../Math/Point';
 import JEdge from './JEdge';
 import JSite from './JSite';
 

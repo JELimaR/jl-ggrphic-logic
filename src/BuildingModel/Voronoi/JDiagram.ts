@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Cell, Diagram, Halfedge, Edge } from 'voronoijs';
-import Point, { IPoint } from '../Geom/Point';
+import Point, { IPoint } from '../Math/Point';
 import JCell, { IJCellInfo } from "./JCell";
 import JEdge, { IJEdgeInfo } from "./JEdge";
 import JSite from './JSite';

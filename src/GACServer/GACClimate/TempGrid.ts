@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import Grid from "../GACGrid/Grid";
-import Point from "../../BuildingModel/Geom/Point";
+import Point from "../../BuildingModel/Math/Point";
 import { IPressureZone } from './PressureGrid'
 import InformationFilesManager from '../../DataFileLoadAndSave/InformationFilesManager';
 import { GRAN } from "../constants";
 import GridPoint from "../GACGrid/GridPoint";
 import DataGrid from "../GACGrid/DataGrid";
-import turf from "../../BuildingModel/Geom/turf";
+import turf from "../../BuildingModel/Math/turf";
 import { calculateTempPromPerLat, generateTempLatArrPerMonth, parametertoRealTemp } from "./tempGridFunctions";
 const dataInfoManager = InformationFilesManager.instance;
 

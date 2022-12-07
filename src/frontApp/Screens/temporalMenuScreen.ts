@@ -1,4 +1,4 @@
-import { inRange } from "../../BuildingModel/Geom/basicGeometryFunctions";
+import { inRange } from "../../BuildingModel/Math/basicMathFunctions";
 import Menu, { IMenuItem } from "../Menu";
 
 export interface IStateTemporalMenuSccreen {

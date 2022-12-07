@@ -1,4 +1,4 @@
-import { IPoint } from "../BuildingModel/Geom/Point";
+import { IPoint } from "../BuildingModel/Math/Point";
 
 export interface IAPanzoom {
 	zoom: number;

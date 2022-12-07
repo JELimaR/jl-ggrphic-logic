@@ -1,4 +1,4 @@
-import Point from '../Geom/Point';
+import Point from '../Math/Point';
 
 import JDiagram from '../Voronoi/JDiagram';
 import JVertex from '../Voronoi/JVertex';

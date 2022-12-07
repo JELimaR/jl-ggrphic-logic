@@ -1,4 +1,4 @@
-import { getPointInValidCoords, number2Precition, PRECITION } from './basicGeometryFunctions';
+import { getPointInValidCoords, number2Precition, PRECITION } from './basicMathFunctions';
 import turf from './turf';
 
 export interface IPoint {

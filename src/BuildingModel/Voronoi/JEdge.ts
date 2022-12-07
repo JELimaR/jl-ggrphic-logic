@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Edge } from 'voronoijs';
-import Point from '../Geom/Point';
+import Point from '../Math/Point';
 import JSite from './JSite';
 import JDiagram from './JDiagram';
 
-import RandomNumberGenerator from '../Geom/RandomNumberGenerator';
+import RandomNumberGenerator from '../Math/RandomNumberGenerator';
 import JVertex from './JVertex';
-import turf from '../Geom/turf';
+import turf from '../Math/turf';
 
 export interface IJEdgeInfo {
 	id: string;

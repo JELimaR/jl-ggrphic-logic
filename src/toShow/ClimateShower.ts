@@ -4,8 +4,8 @@ import * as JCellToDrawEntryFunctions from '../AbstractDrawing/JCellToDrawEntryF
 
 import JCell from "../BuildingModel/Voronoi/JCell";
 import { lifeZonesList, TKoppenSubType, TKoppenType } from "../BuildingModel/Voronoi/CellInformation/JCellClimate";
-import { IPoint } from "../BuildingModel/Geom/Point";
-import { inRange } from "../BuildingModel/Geom/basicGeometryFunctions";
+import { IPoint } from "../BuildingModel/Math/Point";
+import { inRange } from "../BuildingModel/Math/basicMathFunctions";
 import { IAPanzoom } from '../AbstractDrawing/APanzoom';
 
 export default class ClimateShower extends Shower {

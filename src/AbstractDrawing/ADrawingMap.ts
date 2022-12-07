@@ -1,13 +1,13 @@
 import * as JCellToDrawEntryFunctions from './JCellToDrawEntryFunctions'
 import * as chroma from 'chroma-js';
-import Point, { IPoint } from '../BuildingModel/Geom/Point';
+import Point, { IPoint } from '../BuildingModel/Math/Point';
 import JCell from '../BuildingModel/Voronoi/JCell';
 import RegionMap from '../BuildingModel/MapContainerElements/RegionMap';
 import { ICellContainer, IEdgeContainer, IVertexContainer } from '../BuildingModel/MapContainerElements/containerInterfaces';
 import JVertex from '../BuildingModel/Voronoi/JVertex';
 import JEdge from '../BuildingModel/Voronoi/JEdge';
-import turf from '../BuildingModel/Geom/turf';
-import { inRange } from '../BuildingModel/Geom/basicGeometryFunctions';
+import turf from '../BuildingModel/Math/turf';
+import { inRange } from '../BuildingModel/Math/basicMathFunctions';
 import IDrawingParameters from './IDrawingParameters';
 import APanzoom, { IAPanzoom } from './APanzoom';
 

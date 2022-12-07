@@ -1,5 +1,5 @@
 import { Site } from 'voronoijs';
-import Point, { IPoint } from '../Geom/Point';
+import Point, { IPoint } from '../Math/Point';
 
 export interface IJSiteInfo {
 	id: number;
