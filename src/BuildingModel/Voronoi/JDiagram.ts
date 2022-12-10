@@ -303,6 +303,15 @@ export default class JDiagram {
 			throw new Error('no se encontro cell');
 		}
 	}
+
+  getEdgeFromVertices(v1: JVertex, v2: JVertex): JEdge {
+    let out: JEdge | undefined = this._edges.get(`a${v1.id}-b${v2.id}`);
+
+    if (!out) out = this._edges.get(`a${v2.id}-b${v1.id}`);
+    if (!out) throw new Error('')
+
+    return out;
+  }
 	/*
 	getCellFromPoint2(p: Point): JCell { // no esta funcionando bien
 		let out: JCell | undefined;

@@ -56,8 +56,8 @@ export default class JCellHeight extends JCellGeneric {
 	get prevHeight(): number {return this._prevHeight}
 	get heightType(): TypeCellheight {return this._heightType}
 	set heightType(ht: TypeCellheight) {this._heightType = ht}
-	set island(id: number) { this._islandId = id } // solo una vez se puede cambiar
-	get island(): number { return this._islandId }
+	set islandId(id: number) { this._islandId = id } // solo una vez se puede cambiar
+	get islandId(): number { return this._islandId }
 	// get inLandZone(): boolean {return this._heightType === ''}
 
 	getInterface(): IJCellHeightInfo {

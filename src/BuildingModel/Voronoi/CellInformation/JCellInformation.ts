@@ -32,8 +32,8 @@ export default class JCellInformation {
 	get height(): number { return this._height!.height }
 	get prevHeight(): number { return this._height!.prevHeight }
 
-	set islandId(id: number) { this._height!.island = id; } // se puede eliminar
-	get islandId(): number { return this._height!.island; }
+	set islandId(id: number) { this._height!.islandId = id; } // se puede eliminar
+	get islandId(): number { return this._height!.islandId; }
 
 	/*
 	 * climate
