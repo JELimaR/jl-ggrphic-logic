@@ -25,8 +25,8 @@ export default class Grid {
 	get points(): GridPoint[][] { return this._points }
 
 	forEachPoint(func: (gp: GridPoint, col: number, row: number) => void): void {
-		this._points.forEach((col: GridPoint[], cidx: number) => {
-			col.forEach((gp: GridPoint, ridx: number) => {
+		this._points.forEach((colPoints: GridPoint[], cidx: number) => {
+			colPoints.forEach((gp: GridPoint, ridx: number) => {
 				func(gp, cidx, ridx);
 			})
 		})
@@ -43,7 +43,11 @@ export default class Grid {
 
 	getGridPoint(p: Point): GridPoint {
 		const INDXS = this.getGridPointIndexes(p);
-		return this._points[INDXS.c][INDXS.r];
+		try {
+			return this._points[INDXS.c][INDXS.r];
+		} catch(e) {
+			throw new Error('getGridPoint')
+		}
 	}
 
 	getGridPointsInWindow(point: Point, windKm: number): GridPoint[] {

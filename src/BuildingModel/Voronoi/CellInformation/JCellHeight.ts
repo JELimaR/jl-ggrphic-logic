@@ -52,7 +52,7 @@ export default class JCellHeight extends JCellGeneric {
 		this._prevHeight = this._height;
 		this._height = h;
 	}
-	get heightInMeters(): number { return JCellHeight.heightParamToMeters(this._height - 0.2) };
+	get heightInMeters(): number { return JCellHeight.heightParamToMeters(this._height) }
 	get prevHeight(): number {return this._prevHeight}
 	get heightType(): TypeCellheight {return this._heightType}
 	set heightType(ht: TypeCellheight) {this._heightType = ht}

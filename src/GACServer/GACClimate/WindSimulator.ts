@@ -4,7 +4,7 @@ import Point from "../../BuildingModel/Math/Point";
 import Grid from "../GACGrid/Grid";
 import GridPoint from "../GACGrid/GridPoint";
 import PressureGrid, { PressureData } from "./PressureGrid";
-import TempGrid from "./TempGrid";
+import TempGrid, { ITempDataGrid } from "./TempGrid";
 import { getPointInValidCoords, getArrayOfN } from "../../BuildingModel/Math/basicMathFunctions";
 
 const sat = 8000;
@@ -61,6 +61,15 @@ export default class WindSimulate {
     this._grid = grid;
     this._pressGrid = pressGrid;
     this._tempGrid = tempGrid;
+    // this._tempGrid.matrixData.forEach((dataCol: ITempDataGrid[], cidx: number)=>{
+    //   dataCol.forEach((td: ITempDataGrid, ridx: number) => {
+    //     if (isNaN(td.tempMonth[0])) {
+    //       console.log(JSON.stringify(this._tempGrid.matrixData[cidx][ridx], null, 2))
+    //       console.log(JSON.stringify(tempGrid.matrixData[cidx][ridx], null, 2))
+    //       throw new Error('asgasfd')
+    //     }
+    //   })
+    // })
   }
 
   windSim(): {
@@ -108,6 +117,23 @@ export default class WindSimulate {
       this._grid.forEachPoint((gp: GridPoint) => gp.cell.dismark());
       precipOut.set(m, dataPrecip);
       routeOut.set(m, dataRoutes);
+
+      // let r = 0;
+      // let c = 0;
+
+      // dataPrecip.forEach((dataCol: IPrecipDataGenerated[], cidx: number)=>{
+      //   dataCol.forEach((dp: IPrecipDataGenerated, ridx: number) => {
+      //     if (isNaN(dp.precipValue)) {
+      //       r = ridx;
+      //       c = cidx;
+      //       console.log(JSON.stringify(dp, null, 2))
+      //       throw new Error('asgasfd')
+      //     }
+      //   })
+      // })
+
+      // // console.log(dataPrecip[c][r])
+      // console.log(JSON.stringify(dataPrecip[c][r],null,2))
     })
 
     return {
@@ -155,10 +181,16 @@ export default class WindSimulate {
         deltaTempOut,
       } = this.calcMoistureValuesIter(gpnew, gpprev, acc, month);
       acc = accOut;
-      if (gpprev !== gpnew)
-        route.push(new WindRoutePoint(currPos, precipOut, evapOut, accOut));
+      // if (gpprev !== gpnew)
+      //   route.push(new WindRoutePoint(currPos, precipOut, evapOut, accOut));
 
       // asignar
+      // if (isNaN(deltaTempOut)) {
+      //   console.log('curret: ', dataPrecip[gpprev.colValue][gpprev.rowValue].deltaTempValue)
+      //   console.log(dataPrecip[gpprev.colValue][gpprev.rowValue])
+      //   throw new Error('no hay')
+      //   // dataPrecip[gpprev.colValue][gpprev.rowValue] = { precipValue: 0, precipCant: 0, deltaTempCant: 0, deltaTempValue: 0 };
+      // }
       dataPrecip[gpprev.colValue][gpprev.rowValue].precipValue += precipOut;
       dataPrecip[gpprev.colValue][gpprev.rowValue].precipCant++;
       dataPrecip[gpnew.colValue][gpnew.rowValue].deltaTempValue += deltaTempOut;
@@ -183,8 +215,8 @@ export default class WindSimulate {
     const currHeight: number = gpprev.cell.info.height;
     // const nextPress: number = this._pressGrid.getPointInfo(gpnew._point).pots[month - 1];
     const currPress: number = this._pressGrid.getPointInfo(gpprev.point).pots[month - 1];
-    const nextTemp: number = this._tempGrid.getPointInfo(gpprev.point).tempMonth[month - 1];
-    const currTemp: number = this._tempGrid.getPointInfo(gpnew.point).tempMonth[month - 1];
+    const nextTemp: number = this._tempGrid.getPointInfo(gpnew.point).tempMonth[month - 1];
+    const currTemp: number = this._tempGrid.getPointInfo(gpprev.point).tempMonth[month - 1];
     const tempParam: number = currTemp < tempMin ? 0 : (currTemp - tempMin) / (35 - tempMin);
     const mmm: { med: number, max: number, min: number } = this._pressGrid.getMaxMedMin(month);
     // salidas
@@ -192,7 +224,10 @@ export default class WindSimulate {
     let evapOut = 0;
     let accOut = 0;
     const deltaTempOut = (nextHeight > 0.2 ? 2 : 10) * (currTemp - nextTemp);
-
+    // if (isNaN(currTemp)) {
+    //   console.log(this._tempGrid.getPointInfo(gpprev.point), month)
+    //   // throw new Error('dentro')
+    // }
     // pressValue
     let pval = 0;
     if (currPress == 0) throw new Error('pressValue es 0')

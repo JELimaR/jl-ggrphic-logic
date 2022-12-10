@@ -39,7 +39,7 @@ export default class RiverMapGenerator extends MapGenerator<IRiverMapGeneratorOu
       // setear flux routes
       fluxRoutesDataLoaded.forEach((ifri: IFluxRouteMapInfo) => {
         const fr: FluxRouteMap = new FluxRouteMap(ifri.id, this.diagram, ifri);
-				/*this.*/fluxRoutesOut.set(fr.id, fr);
+				fluxRoutesOut.set(fr.id, fr);
       })
     }
     console.timeEnd(`flux and water drain route`)
@@ -48,13 +48,14 @@ export default class RiverMapGenerator extends MapGenerator<IRiverMapGeneratorOu
     console.time(`rivers`)
     if (riversDataLoaded.length === 0) {
       this.setRivers(fluxRoutesOut, riversOut);
+      console.log('rivers generados', riversOut.size)
       console.time('nav')
       this.evalAllRiversNavigabilityFromSea(riversOut);
       console.timeEnd('nav')
     } else {
       riversDataLoaded.forEach((iri: IRiverMapInfo) => {
         const river: RiverMap = new RiverMap(iri.id, this.diagram, iri);
-				/*this.*/riversOut.set(river.id, river);
+				riversOut.set(river.id, river);
       })
     }
     console.timeEnd(`rivers`)

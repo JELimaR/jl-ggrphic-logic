@@ -3,7 +3,7 @@ import JCell from "./BuildingModel/Voronoi/JCell";
 import CellCost from "./GACServer/GACCultures/CellCost";
 import MapController from "./MapController";
 import chroma from 'chroma-js';
-import { inDiscreteClasses } from "./BuildingModel/Math/basicMathFunctions";
+import { inDiscreteClasses, getArrayOfN } from './BuildingModel/Math/basicMathFunctions';
 import JVertex from './BuildingModel/Voronoi/JVertex';
 import IslandMap from './BuildingModel/MapContainerElements/Natural/IslandMap';
 import Point, { IPoint } from './BuildingModel/Math/Point';
@@ -21,12 +21,12 @@ const mc = MapController.instance;
 const colorScale: chroma.Scale = chroma.scale('Spectral').domain([1, 0]);
 export default (): void => {
   const nm: NaturalMap = mc.naturalMap;
-  nm.rivers;
+  console.log(nm.rivers.size);
 
-  const month = 7;
+  const month = 1;
   const cdm = mc.cdm;
 
-  cdm.clear({zoom: 4, center: {x: 90, y: -29}})
+  cdm.clear({zoom: 4, center: {x: 80, y: -42}})
   cdm.drawCellContainer(nm.diagram, land(1));
   cdm.drawCellContainer(mc.naturalMap.diagram, (c: JCell) => {
     let color: string = '#FFFFFF00';
@@ -50,7 +50,7 @@ export default (): void => {
         e.vertices[0].info.vertexFlux.navLevelMonth[month-1], 
         e.vertices[1].info.vertexFlux.navLevelMonth[month-1]
       );
-      val = val === 3 ? 3 : 0;
+      // val = val === 3 ? 3 : 0;
       let color: string = colorScale(val/3).hex();
       return {
         fillColor: color,
@@ -62,13 +62,16 @@ export default (): void => {
   cdm.drawMeridianAndParallels();
   console.log(cdm.saveDrawFile('nav3404'));
 
-  const v: JVertex = nm.diagram.getVertexFromPoint(new Point(88, -11));
-  console.log(v.info.vertexFlux.navLevelMonth)
+  console.log('Flux limit', nm.diagram.vertices.size*FLUXLIMITPARAM)
+  console.log('MIN nav Flux limit', nm.diagram.vertices.size*FLUXLIMITPARAM*5)
+
+  const v: JVertex = nm.diagram.getVertexFromPoint(new Point(80, -42));
   console.log(v.info.vertexFlux.getInterface())
+  console.log(v.info.vertexClimate.getInterface())
 }
 
 const isCellNearNav = (cell: JCell, month: number): boolean => {
-  // if (!cell.info.isLand) return false;
+  if (!cell.info.isLand) return false;
   let out: boolean = false;
 
   mc.naturalMap.diagram.getVerticesAssociated(cell).forEach((v: JVertex) => {

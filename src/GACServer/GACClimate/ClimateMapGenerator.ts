@@ -116,16 +116,16 @@ export default class ClimateMapGenerator extends MapGenerator<void> {
 				precipMonth: getArrayOfN(12, 0),
 			}
       
-			const cells: JCell[] = this.diagram.getCellsAssociated(vertex);
-			cells.forEach((c: JCell) => {
+			const cellsAso: JCell[] = this.diagram.getCellsAssociated(vertex);
+			cellsAso.forEach((c: JCell) => {
         const ch = c.info.cellClimate;
 				info.tempMonth = ch.tempMonth.map((t: number, i: number) => info.tempMonth[i] + t);
 				info.precipMonth = ch.precipMonth.map((p: number, i: number) => info.precipMonth[i] + p);
 			})
-			info.tempMonth = info.tempMonth.map((t: number) => t / cells.length);
-			info.precipMonth = info.precipMonth.map((p: number) => p / cells.length);
+			info.tempMonth = info.tempMonth.map((t: number) => t / cellsAso.length);
+			info.precipMonth = info.precipMonth.map((p: number) => p / cellsAso.length);
       
-			vertex.info.setClimateInfo(info)
+			vertex.info.setClimateInfo(info);
 		})
     console.timeEnd('set vertex climate data')
 	}

@@ -28,14 +28,25 @@ export default class TempGrid extends DataGrid<ITempDataGrid> {
 		this.matrixData = this.setTempData();
 		for (let i = 0; i < 2; i++)
 			this.smoothTemp(5)
+		// error abajo
 		this.grid.forEachPoint((gp: GridPoint, cidx: number, ridx: number) => {
 			if (gp.cell.info.isLand) {
+				console.log(gp.cell.info.cellHeight.heightInMeters)
 				const hf = 6.5 * gp.cell.info.cellHeight.heightInMeters / 1000;
-				this.matrixData[cidx][ridx].tempMonth = this.matrixData[cidx][ridx].tempMonth.map((t: number, i: number) =>
+				this.matrixData[cidx][ridx].tempMonth.forEach((t: number, i: number) =>
 					this.matrixData[cidx][ridx].tempMonth[i] = t - hf
 				)
 			}
 		})
+		// error arriba
+		// this.matrixData.forEach((dataCol: ITempDataGrid[], cidx: number)=>{
+		// 	dataCol.forEach((td: ITempDataGrid, ridx: number) => {
+		// 		if (isNaN(td.tempMonth[0])) {
+		// 			console.log(JSON.stringify(this.matrixData[cidx][ridx], null, 2))
+		// 			throw new Error('en tempGrid')
+		// 		}
+		// 	})
+		// })
 		console.timeEnd('set temp grid data');
 	}
 
@@ -117,15 +128,19 @@ export default class TempGrid extends DataGrid<ITempDataGrid> {
         let cant = 1;
 				//this._grid.getGridPointsInWindow(this._grid.points[cidx][ridx].point, win).forEach((gpiw: JGridPoint) => {
 				this.grid.getGridPointsInWindowGrade(this.grid.points[cidx][ridx].point, win).forEach((gpiw: GridPoint) => {
-					const indexes = this.grid.getGridPointIndexes(gpiw.point);
 					cant++;
-					this.matrixData[indexes.c][indexes.r].tempMonth.forEach((tv: number, i: number) => tmonth[i] += tv);
+					// const indexes = this.grid.getGridPointIndexes(gpiw.point);
+					// this.matrixData[indexes.c][indexes.r].tempMonth.forEach((tv: number, i: number) => tmonth[i] += tv);
+					this.getPointInfo(gpiw.point).tempMonth.forEach((tv: number, i: number) => tmonth[i] += tv);
 				})
 				dataCol[ridx] = {
 					tempCap: this.matrixData[cidx][ridx].tempCap,
 					tempMonth: tmonth.map((v: number) => v / cant),
 					tempMed: tmonth.reduce((p: number, c: number) => p + c) / cant / 12
 				};
+				// if (isNaN(dataCol[ridx].tempMonth[5])) { // borrar
+				// 	throw new Error('en smoothTemp de TempGrid') // borrar
+				// } // borrar
 			})
 			cout[cidx] = dataCol;
 		})

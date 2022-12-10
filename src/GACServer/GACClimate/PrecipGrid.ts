@@ -3,7 +3,7 @@ import Grid from "../GACGrid/Grid";
 import GridPoint from "../GACGrid/GridPoint";
 import DataGrid from "../GACGrid/DataGrid";
 import PressureGrid from "./PressureGrid";
-import TempGrid from "./TempGrid";
+import TempGrid, { ITempDataGrid } from "./TempGrid";
 import WindSimulate, { IPrecipDataGenerated } from "./WindSimulator";
 import { getArrayOfN } from "../../BuildingModel/Math/basicMathFunctions";
 
@@ -16,6 +16,16 @@ export default class PrecipGrid extends DataGrid<IPrecipData> {
 
 	constructor(grid: Grid, pressGrid: PressureGrid, tempGrid: TempGrid) {
 		super(grid);
+
+		// tempGrid.matrixData.forEach((dataCol: ITempDataGrid[], cidx: number)=>{
+    //   dataCol.forEach((td: ITempDataGrid, ridx: number) => {
+    //     if (isNaN(td.tempMonth[0])) {
+    //       console.log(JSON.stringify(tempGrid.matrixData[cidx][ridx], null, 2))
+    //       throw new Error('en precip')
+    //     }
+    //   })
+    // })
+
 		console.log('calculate and setting precip info')
 		console.time('set precip info')
 		this.matrixData = this.getPrecipData(pressGrid, tempGrid);
@@ -28,9 +38,9 @@ export default class PrecipGrid extends DataGrid<IPrecipData> {
 		if (out.length == 0) {
 			out = [];
 			const jws: WindSimulate = new WindSimulate(this.grid, pressGrid, tempGrid);
-			const ws = jws.windSim();
+			const simData = jws.windSim();
 
-			ws.precip.forEach((generated: IPrecipDataGenerated[][], month: number) => {
+			simData.precip.forEach((generated: IPrecipDataGenerated[][], month: number) => {
 				generated = this.smoothDeltaTemp(generated);
 				generated = this.smoothDeltaTemp(generated);
 				this.grid.forEachPoint((_gp: GridPoint, cidx: number, ridx: number) => {
@@ -39,6 +49,7 @@ export default class PrecipGrid extends DataGrid<IPrecipData> {
 					const gen = generated[cidx][ridx];
 					out[cidx][ridx].precip[month - 1] = gen.precipCant === 0 ? 0 : gen.precipValue / gen.precipCant;
 					out[cidx][ridx].deltaTemps[month - 1] = gen.deltaTempValue;
+					if (gen.deltaTempValue == null) throw new Error('aca es null')
 				})
 			})
 
