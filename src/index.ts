@@ -2,7 +2,7 @@ console.time('all');
 const newDate = new Date();
 console.log(newDate.toLocaleTimeString());
 
-import { IPoint } from './BuildingModel/Geom/Point';
+import { IPoint } from './BuildingModel/Math/Point';
 import MapController from './MapController';
 import * as path from 'path';
 import initialScreens, { IStateInitialScreen } from './frontApp/Screens/initialScreens';

@@ -1,108 +1,78 @@
-import * as fs from 'fs';
-import * as path from 'path';
+
 import JCell from "./BuildingModel/Voronoi/JCell";
 import CellCost from "./GACServer/GACCultures/CellCost";
 import MapController from "./MapController";
 import chroma from 'chroma-js';
-import { inDiscreteClasses } from "./BuildingModel/Geom/basicGeometryFunctions";
+import { inDiscreteClasses } from "./BuildingModel/Math/basicMathFunctions";
 import JVertex from './BuildingModel/Voronoi/JVertex';
+import IslandMap from './BuildingModel/MapContainerElements/Natural/IslandMap';
+import Point, { IPoint } from './BuildingModel/Math/Point';
+import JEdge from './BuildingModel/Voronoi/JEdge';
+import FluxRouteMap from './BuildingModel/MapContainerElements/Natural/FluxRouteMap';
+import JCellHeight from './BuildingModel/Voronoi/CellInformation/JCellHeight';
+import { FLUXLIMITPARAM } from './GACServer/constants';
+import RiverMap from './BuildingModel/MapContainerElements/Natural/RiverMap';
+import { isCellCoast } from './temporalAuxFunctions';
+import NaturalMap from "./BuildingModel/NaturalMap";
+import { heighLand, land } from "./AbstractDrawing/JCellToDrawEntryFunctions";
 
 const mc = MapController.instance;
-const rootPath = path.resolve(path.dirname('') + '/');
 
+const colorScale: chroma.Scale = chroma.scale('Spectral').domain([1, 0]);
 export default (): void => {
+  const nm: NaturalMap = mc.naturalMap;
+  nm.rivers;
+
+  const month = 7;
   const cdm = mc.cdm;
 
-  cdm.clear()
-  cdm.drawBackground('#FFFFFF');
-  const colorScale: chroma.Scale = chroma.scale('Spectral').domain([1, 0]);
+  cdm.clear({zoom: 4, center: {x: 90, y: -29}})
+  cdm.drawCellContainer(nm.diagram, land(1));
   cdm.drawCellContainer(mc.naturalMap.diagram, (c: JCell) => {
-    let color: string = '#FFFFFF';
-    if (c.info.isLand) {
-      const val = inDiscreteClasses(CellCost.forInitCulture(c), 20);
-      color = colorScale(val).hex();
+    let color: string = '#FFFFFF00';
+    if (isCellNearNav(c, month)) {
+      color = '#896741B1'
     }
     return {
       fillColor: color,
       strokeColor: color,
     }
   })
+  // cdm.drawMeridianAndParallels();
+  // console.log(cdm.saveDrawFile('nav200'));
 
-  // const icmg = new InitCultureMapGenerator(mc.naturalMap.diagram);
-  // const cultures = icmg.generate(mc.naturalMap);
-
-  // cdm.drawArr(cultures, 0.4)
-  // cdm.drawCellContainer(createICellContainer(icmg._initCells), colors({
-  //   fillColor: '#000015',
-  //   strokeColor: '#000015'
-  // }))
-
-  cdm.drawMeridianAndParallels()
-  console.log(cdm.saveDrawFile(`forInitCulture`))
-
-  mc.showerManager.sc.drawKoppen();
-
-  // console.log(mc.showerManager.sc.drawHumidityProvinces())
-
-  // cultures.forEach((cul: RegionMap, i: number) => {
-  //   console.log(i, ':', cul.area.toLocaleString('de-DE', {minimumFractionDigits: 2, maximumFractionDigits: 2}), 'km2 - cells:',
-  //   cul.cells.size, '- neigs cells', cul.getNeightboursCells().length)
-  // })
-
-  estadisticasKoppenVSLifeZone();
-  datosDiagram();
-}
-
-
-const estadisticasKoppenVSLifeZone = (): void => {
-  let printString: string = '';
-
-  mc.naturalMap.diagram.forEachCell((cell: JCell) => {
-    if (cell.info.isLand) {
-      const cc = cell.info.cellClimate;
-      printString += cell.id
-      + '\t' + cc.lifeZone.id 
-      + '\t' + `${cc.lifeZone.id < 10 ? 0 : ''}` + cc.lifeZone.id + ' - ' + cc.lifeZone.desc2
-      + '\t' + cc.koppenSubType()
-      + '\t' + Math.round(cc.tmax*100)/100  + '\t' +  Math.round(cc.tmin*100)/100
-      + '\t' + Math.round(cc.tmed*100)/100
-
-      + '\t' + Math.round(cc.precipSemCalido)  + '\t' +  Math.round(cc.precipSemFrio)
-      + '\t' + Math.round(cc.annualPrecip)
-      + '\t' + Math.round(cell.info.cellHeight.heightInMeters)
-      + '\t' + Math.round(cell.areaSimple*10)/10
-      + '\t' + Math.round(Math.abs(cell.site.point.y))
-      + '\n';
-    }
-  })
-
-  fs.writeFileSync(rootPath + '/estadisticasKoppenVSLifeZone.jdat', printString);
-}
-
-const datosDiagram = (): void => {
-  let printString: string = '';
-
-  const isCellCoast = (cell: JCell): boolean => {
-    let out: boolean = false;
-    mc.naturalMap.diagram.getVerticesAssociated(cell).forEach((v: JVertex) => {
-      out = out || v.info.vertexHeight.heightType == 'coast';
+  // cdm.clear({zoom: 4, center: {x: 90, y: 8}})
+  // cdm.drawCellContainer(nm.diagram, land(1));
+  
+  nm.rivers.forEach((r: RiverMap) => {
+    cdm.drawEdgeContainer(r, (e: JEdge) => {
+      let val = Math.min(
+        e.vertices[0].info.vertexFlux.navLevelMonth[month-1], 
+        e.vertices[1].info.vertexFlux.navLevelMonth[month-1]
+      );
+      val = val === 3 ? 3 : 0;
+      let color: string = colorScale(val/3).hex();
+      return {
+        fillColor: color,
+        strokeColor: color,
+      }
     })
-    return out;
-  }
-
-  mc.naturalMap.diagram.forEachCell((cell: JCell) => {
-    if (cell.info.isLand) {
-      const ch = cell.info.cellHeight;
-      printString += cell.id
-      // + '\t' + cell.neighborsId
-      + '\t' + `${isCellCoast(cell) ? 'coast' : 'none'}`
-
-
-      + '\t' + Math.round(ch.heightInMeters)
-      + '\t' + Math.round(cell.areaSimple*10)/10
-      + '\n';
-    }
   })
 
-  fs.writeFileSync(rootPath + '/datosDiagram.jdat', printString);
+  cdm.drawMeridianAndParallels();
+  console.log(cdm.saveDrawFile('nav3404'));
+
+  const v: JVertex = nm.diagram.getVertexFromPoint(new Point(88, -11));
+  console.log(v.info.vertexFlux.navLevelMonth)
+  console.log(v.info.vertexFlux.getInterface())
+}
+
+const isCellNearNav = (cell: JCell, month: number): boolean => {
+  // if (!cell.info.isLand) return false;
+  let out: boolean = false;
+
+  mc.naturalMap.diagram.getVerticesAssociated(cell).forEach((v: JVertex) => {
+    out = out || v.info.vertexFlux.navLevelMonth[month -1] >= 1;
+  })
+  return out;
 }

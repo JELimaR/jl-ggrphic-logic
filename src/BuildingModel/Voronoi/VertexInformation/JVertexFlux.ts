@@ -8,6 +8,7 @@ export interface IJVertexFluxInfo extends IJVertexGenericInfo {
 	fluxMonth: number[];
 	fluxRouteIds: number[];
 	riverIds: number[];
+  navLevelMonth: number[];
 }
 
 export default class JVertexFlux extends JVertexGeneric {
@@ -15,11 +16,14 @@ export default class JVertexFlux extends JVertexGeneric {
 	private _fluxMonth: number[];
 	private _fluxRouteIds: number[] = [];
 	private _riverIds: number[] = [];
+  private _navLevelMonth: number[] = [];
 
 	constructor(vertex: JVertex, info: IJVertexFluxInfo) {
 		super(vertex)
 		this._fluxMonth = [...info.fluxMonth];
 		this._fluxRouteIds = [...info.fluxRouteIds];
+    this._navLevelMonth = [...info.navLevelMonth];
+
 		if (info.riverIds.length > 3) throw new Error(``)
 		this._riverIds = [...info.riverIds];
 	}
@@ -27,6 +31,9 @@ export default class JVertexFlux extends JVertexGeneric {
 	get annualFlux(): number { return this._fluxMonth.reduce((p: number, c: number) => c + p, 0) }
 	get monthFlux(): number[] { return this._fluxMonth }
 	get minFlux(): number { return Math.min(...this._fluxMonth) }
+
+  get navLevelMonth(): number[] { return this._navLevelMonth }
+  get minNavLevel(): number { return Math.min(...this._navLevelMonth) }
 
 	get riverIds(): number[] { return this._riverIds }
 	get fluxRouteIds(): number[] { return this._fluxRouteIds }
@@ -36,7 +43,8 @@ export default class JVertexFlux extends JVertexGeneric {
 			...super.getInterface(),
 			fluxMonth: [...this._fluxMonth],
 			fluxRouteIds: this._fluxRouteIds,
-			riverIds: this._riverIds
+			riverIds: this._riverIds,
+      navLevelMonth: this._navLevelMonth
 		}
 	}
 

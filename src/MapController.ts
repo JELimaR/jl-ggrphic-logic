@@ -1,9 +1,10 @@
 import * as path from 'path';
 import { IAPanzoom } from './AbstractDrawing/APanzoom';
 import * as JCellToDrawEntryFunctions from './AbstractDrawing/JCellToDrawEntryFunctions';
-import { IPoint } from './BuildingModel/Geom/Point';
-import { ICellContainer, IEdgeContainer, IVertexContainer } from './BuildingModel/MapContainerElements/containerInterfaces';
+import { IPoint } from './BuildingModel/Math/Point';
+import { createICellContainer, ICellContainer, IEdgeContainer, IVertexContainer } from './BuildingModel/MapContainerElements/containerInterfaces';
 import NaturalMap from './BuildingModel/NaturalMap';
+import JCell from './BuildingModel/Voronoi/JCell';
 import CanvasDrawingMap from './CanvasDrawing/CanvasDrawingMap';
 import AzgaarReaderData from './DataFileLoadAndSave/AzgaarReaderData';
 import folderGACConfig from './DataFileLoadAndSave/folderGACConfig';
@@ -107,6 +108,17 @@ export default class MapController {
 
   drawKoppenMap(pz?: IAPanzoom): string {
     return this.showerManager.sc.drawKoppen(pz);
+  }
+
+  drawIndividualCell(cell: JCell, pz?: IAPanzoom): string {
+    this.cdm.clear(pz);
+    this.cdm.drawCellContainer(this.naturalMap.diagram, JCellToDrawEntryFunctions.land(0.8));
+    this.cdm.drawCellContainer(createICellContainer([cell]), JCellToDrawEntryFunctions.colors({
+      fillColor: '#000000A0',
+      strokeColor: '#FF000045'
+    }))
+    this.cdm.drawMeridianAndParallels()
+    return this.cdm.saveDrawFile('cellIndividual');
   }
 
   /** */

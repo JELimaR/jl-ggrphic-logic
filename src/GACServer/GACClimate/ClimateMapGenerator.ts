@@ -9,7 +9,7 @@ import { IJVertexClimateInfo } from "../../BuildingModel/Voronoi/VertexInformati
 import PrecipGrid, { IPrecipData } from "./PrecipGrid";
 import PressureGrid from "./PressureGrid";
 import TempGrid from "./TempGrid";
-import { getArrayOfN } from "../../BuildingModel/Geom/basicGeometryFunctions";
+import { getArrayOfN } from "../../BuildingModel/Math/basicMathFunctions";
 
 
 export default class ClimateMapGenerator extends MapGenerator<void> {
@@ -75,6 +75,14 @@ export default class ClimateMapGenerator extends MapGenerator<void> {
 			}
 		})
 
+    climateData.forEach((cinfo: IJCellClimateInfo) => {
+      cinfo.precipMonth.forEach((p: number, i: number, arr: number[]) => {
+        const prev = i === 0 ? 11 : i-1;
+        const next = i === 11 ? 0 : i+1;
+        cinfo.precipMonth[i] = 0.65 * p + 0.35 * (arr[prev] + arr[next])/2;
+      })
+    })
+
 		this.diagram.dismarkAllCells();
 
 		return climateData;
@@ -82,43 +90,43 @@ export default class ClimateMapGenerator extends MapGenerator<void> {
 	}
 
 	private smoothData() {
-		console.log('seting vertex climate')
-		console.time('set vertex climate data')
-		this.diagram.forEachCell((c: JCell) => {
-			const cinfo: JCellClimate = c.info.cellClimate;
+    this.diagram.forEachCell((c: JCell) => {
+      const cinfo: JCellClimate = c.info.cellClimate;
 			const precipMonthProm: number[] = getArrayOfN(12, 0);
 			const tempMonthProm: number[] = getArrayOfN(12, 0);
 			let cant = 0;
 			this.diagram.getCellNeighbours(c).forEach((nc: JCell) => {
-				const ninfo: JCellClimate = nc.info.cellClimate;
+        const ninfo: JCellClimate = nc.info.cellClimate;
 				cant++;
 				precipMonthProm.forEach((p: number, i: number) => precipMonthProm[i] = p + ninfo.precipMonth[i]);
 				tempMonthProm.forEach((t: number, i: number) => tempMonthProm[i] = t + ninfo.tempMonth[i]);
 			})
-			cinfo.precipMonth.forEach((p: number, i: number) => cinfo.precipMonth[i] = 0.1 * p + 0.9 * precipMonthProm[i] / cant);
-			cinfo.tempMonth.forEach((t: number, i: number) => cinfo.tempMonth[i] = 0.8 * t + 0.2 * tempMonthProm[i] / cant);
+			cinfo.precipMonth.forEach((p: number, i: number) => cinfo.precipMonth[i] = 0.7 * p + 0.3 * precipMonthProm[i] / cant);
+			cinfo.tempMonth.forEach((t: number, i: number) => cinfo.tempMonth[i] = 0.7 * t + 0.3 * tempMonthProm[i] / cant);
 		})
-		console.timeEnd('set vertex climate data')
 	}
-
+  
 	private setVertexInfo() {
+    console.log('seting vertex climate')
+    console.time('set vertex climate data')
 		this.diagram.forEachVertex((vertex: JVertex) => {
-			const info: IJVertexClimateInfo = {
-				id: vertex.id,
+      const info: IJVertexClimateInfo = {
+        id: vertex.id,
 				tempMonth: getArrayOfN(12, 0),
 				precipMonth: getArrayOfN(12, 0),
 			}
-
+      
 			const cells: JCell[] = this.diagram.getCellsAssociated(vertex);
 			cells.forEach((c: JCell) => {
-				const ch = c.info.cellClimate;
+        const ch = c.info.cellClimate;
 				info.tempMonth = ch.tempMonth.map((t: number, i: number) => info.tempMonth[i] + t);
 				info.precipMonth = ch.precipMonth.map((p: number, i: number) => info.precipMonth[i] + p);
 			})
 			info.tempMonth = info.tempMonth.map((t: number) => t / cells.length);
 			info.precipMonth = info.precipMonth.map((p: number) => p / cells.length);
-
+      
 			vertex.info.setClimateInfo(info)
 		})
+    console.timeEnd('set vertex climate data')
 	}
 }
