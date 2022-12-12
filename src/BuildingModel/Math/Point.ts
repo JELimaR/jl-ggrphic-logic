@@ -69,8 +69,8 @@ export default class Point {
 		return a.id === b.id;
 	}
 
-	static distance(a: Point, b: Point): number {
-		return Math.sqrt(Math.pow(a._x - b._x, 2) + Math.pow(a._y - b._y, 2));
+	static distance(a: IPoint, b: IPoint): number {
+		return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
 	}
 
 	static distance2(a: Point, b: Point): number {
@@ -125,7 +125,10 @@ export default class Point {
 		let greatCircle = turf.greatCircle(start.toTurfPoint(), ended.toTurfPoint(), {
 			npoints: Math.round(Point.geogDistance(start, ended) / 50) //10
 		});
-		return greatCircle.geometry.coordinates.map((tp: any) => Point.fromTurfPosition(tp));
+
+    const coordinates: turf.Position[] = greatCircle.geometry.coordinates as turf.Position[];
+    return coordinates.map((tp: turf.Position) => Point.fromTurfPosition(tp));
+
 	}
 
 	// static constructors

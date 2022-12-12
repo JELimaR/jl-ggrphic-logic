@@ -15,6 +15,7 @@ import RiverMap from './BuildingModel/MapContainerElements/Natural/RiverMap';
 import { isCellCoast } from './temporalAuxFunctions';
 import NaturalMap from "./BuildingModel/NaturalMap";
 import { heighLand, land } from "./AbstractDrawing/JCellToDrawEntryFunctions";
+import { evalIndVertexNavLevel } from "./GACServer/GACFlux/RiverMapGenerator";
 
 const mc = MapController.instance;
 
@@ -26,7 +27,7 @@ export default (): void => {
   const month = 1;
   const cdm = mc.cdm;
 
-  cdm.clear({zoom: 4, center: {x: 80, y: -42}})
+  cdm.clear({zoom: 4, center: {x: 22, y: 52}})
   cdm.drawCellContainer(nm.diagram, land(1));
   cdm.drawCellContainer(mc.naturalMap.diagram, (c: JCell) => {
     let color: string = '#FFFFFF00';
@@ -65,8 +66,12 @@ export default (): void => {
   console.log('Flux limit', nm.diagram.vertices.size*FLUXLIMITPARAM)
   console.log('MIN nav Flux limit', nm.diagram.vertices.size*FLUXLIMITPARAM*5)
 
-  const v: JVertex = nm.diagram.getVertexFromPoint(new Point(80, -42));
+  const v: JVertex = nm.diagram.getVertexFromPoint({x: -11, y:15});
+  
+  console.log(v.info.vertexHeight.getInterface())
   console.log(v.info.vertexFlux.getInterface())
+  console.log(v.info.vertexFlux.minNavLevel)
+  console.log('eval ind', evalIndVertexNavLevel(v, 8, nm.diagram))
   console.log(v.info.vertexClimate.getInterface())
 }
 

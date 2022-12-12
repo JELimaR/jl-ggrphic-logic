@@ -1,4 +1,4 @@
-import { number2Precition } from "../../Math/basicMathFunctions";
+import { heightParamToMeters, number2Precition } from "../../Math/basicMathFunctions";
 import { TypeInformationKey } from "../../TypeInformationKey";
 import JCell from "../JCell";
 import JCellGeneric, { IJCellGenericInfo } from "./JCellGeneric";
@@ -52,7 +52,7 @@ export default class JCellHeight extends JCellGeneric {
 		this._prevHeight = this._height;
 		this._height = h;
 	}
-	get heightInMeters(): number { return JCellHeight.heightParamToMeters(this._height) }
+	get heightInMeters(): number { return heightParamToMeters(this._height) }
 	get prevHeight(): number {return this._prevHeight}
 	get heightType(): TypeCellheight {return this._heightType}
 	set heightType(ht: TypeCellheight) {this._heightType = ht}
@@ -70,10 +70,6 @@ export default class JCellHeight extends JCellGeneric {
 			islandId: this._islandId,
 		}
 	}
-
-  static heightParamToMeters(h: number): number {
-    return 6121.258 * ((h - 0.2)/0.8) ** 1.8
-  }
 
 	static getTypeInformationKey(): TypeInformationKey {
 		return 'cellHeight';

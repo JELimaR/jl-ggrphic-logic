@@ -28,25 +28,15 @@ export default class TempGrid extends DataGrid<ITempDataGrid> {
 		this.matrixData = this.setTempData();
 		for (let i = 0; i < 2; i++)
 			this.smoothTemp(5)
-		// error abajo
+
 		this.grid.forEachPoint((gp: GridPoint, cidx: number, ridx: number) => {
 			if (gp.cell.info.isLand) {
-				console.log(gp.cell.info.cellHeight.heightInMeters)
 				const hf = 6.5 * gp.cell.info.cellHeight.heightInMeters / 1000;
 				this.matrixData[cidx][ridx].tempMonth.forEach((t: number, i: number) =>
 					this.matrixData[cidx][ridx].tempMonth[i] = t - hf
 				)
 			}
 		})
-		// error arriba
-		// this.matrixData.forEach((dataCol: ITempDataGrid[], cidx: number)=>{
-		// 	dataCol.forEach((td: ITempDataGrid, ridx: number) => {
-		// 		if (isNaN(td.tempMonth[0])) {
-		// 			console.log(JSON.stringify(this.matrixData[cidx][ridx], null, 2))
-		// 			throw new Error('en tempGrid')
-		// 		}
-		// 	})
-		// })
 		console.timeEnd('set temp grid data');
 	}
 

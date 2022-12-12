@@ -263,7 +263,7 @@ export default class JDiagram {
 		return this._vertices.get(id);
 	}
 
-	getCellFromPoint(p: Point): JCell {
+	getCellFromPoint(p: IPoint): JCell {
 		// se puede verificar si el punto se encuentra en la cell
 		let out: JCell | undefined;
 		let minDis = Infinity;
@@ -284,7 +284,7 @@ export default class JDiagram {
 		}
 	}
 
-	getVertexFromPoint(p: Point): JVertex {
+	getVertexFromPoint(p: IPoint): JVertex {
 		let out: JVertex | undefined;
 		const cellAso: JCell = this.getCellFromPoint(p);
 		let minDis = Infinity;

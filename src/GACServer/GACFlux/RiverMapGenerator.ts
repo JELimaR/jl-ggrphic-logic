@@ -6,7 +6,7 @@ import JVertexFlux, { IJVertexFluxInfo } from "../../BuildingModel/Voronoi/Verte
 import MapGenerator from "../MapGenerator";
 import FluxRouteMap, { IFluxRouteMapInfo } from "../../BuildingModel/MapContainerElements/Natural/FluxRouteMap";
 import RiverMap, { IRiverMapInfo } from "../../BuildingModel/MapContainerElements/Natural/RiverMap";
-import { getArrayOfN } from "../../BuildingModel/Math/basicMathFunctions";
+import { getArrayOfN, heightParamToMeters } from "../../BuildingModel/Math/basicMathFunctions";
 import { IRiverMapGeneratorOut } from "../../BuildingModel/INaturalMapCreator";
 import { FLUXLIMITPARAM } from "../constants";
 import JCellHeight from "../../BuildingModel/Voronoi/CellInformation/JCellHeight";
@@ -209,11 +209,16 @@ export default class RiverMapGenerator extends MapGenerator<IRiverMapGeneratorOu
   private intialVerticesEval() {
     this.diagram.forEachVertex((v: JVertex) => {
       const finfo = v.info.vertexFlux;
+      const tempMonth = v.info.vertexClimate.tempMonth;
       const ht = v.info.vertexHeight.heightType;
       if (ht === 'coast' || ht === 'lakeCoast')
-        finfo.navLevelMonth.forEach((_, i: number) => finfo.navLevelMonth[i] = 3)
+        finfo.navLevelMonth.forEach((_, i: number) => 
+          finfo.navLevelMonth[i] = tempMonth[i] > -8 ? 3 : 0
+        )
       else if (ht === 'ocean' || ht === 'lake')
-        finfo.navLevelMonth.forEach((_, i: number) => finfo.navLevelMonth[i] = 4)
+        finfo.navLevelMonth.forEach((_, i: number) => 
+          finfo.navLevelMonth[i] =  tempMonth[i] > -8 ? 4 : 0
+        )
     })
   }
   /**
@@ -222,9 +227,6 @@ export default class RiverMapGenerator extends MapGenerator<IRiverMapGeneratorOu
   private evalRiverVertices (river: RiverMap, rivers: Map<number, RiverMap>) {
     const fluxInfo = river.fin.info.vertexFlux;
     if (fluxInfo.navLevelMonth[0] === -1) { // desemboca en otro river que no fue evaluado
-      // if (fluxInfo.riverIds.length !== 2) {
-      //   console.log(fluxInfo.riverIds.length)
-      // }
       const oid = fluxInfo.riverIds[0] === river.id ? fluxInfo.riverIds[1] : fluxInfo.riverIds[0];
       const other: RiverMap = rivers.get(oid) as RiverMap;
       this.evalRiverVertices(other, rivers);
@@ -237,7 +239,7 @@ export default class RiverMapGenerator extends MapGenerator<IRiverMapGeneratorOu
       const prevInfo = prevV.info.vertexFlux;
   
       for (let m = 1; m <= 12; m++) {
-        const currLevel = this.evalIndEdgeNavLevel(currV, prevV, m);
+        const currLevel = evalIndEdgeNavLevel(currV, prevV, m, this.diagram);
         currInfo.navLevelMonth[m-1] = Math.min(prevInfo.navLevelMonth[m-1], currLevel);
       }
     }
@@ -255,53 +257,52 @@ export default class RiverMapGenerator extends MapGenerator<IRiverMapGeneratorOu
     return out;
   }
 
-  /**
-   * evalIndEdgeNav
-   * @param prevV 
-   * @param currV 
-   * @param month 
-   */
-  evalIndEdgeNavLevel(currV: JVertex, prevV: JVertex, month: number): number {
-    const edge = this.diagram.getEdgeFromVertices(prevV, currV);
-  
-    const difH = JCellHeight.heightParamToMeters(currV.info.height) - 
-      JCellHeight.heightParamToMeters(prevV.info.height);
-    const dist = edge.length;
-  
-    const desnivel = 0.1*difH/dist; // cm per m
-  
-    if (desnivel > 10) return 0;
-    else 
-      return Math.min(
-        this.evalIndVertexNavLevel(prevV, month),
-        this.evalIndVertexNavLevel(currV, month)
-      );
-  }
-  
-  /**
-   * evalIndVertexNav
-   * @param vertex 
-   * @param month 
-   */
-  evalIndVertexNavLevel(vertex: JVertex, month: number): number {  
-    let out: number = 0;
-    const VSIZE_FLUXLIMIT = this.diagram.vertices.size * FLUXLIMITPARAM;
-    const flux = vertex.info.vertexFlux.monthFlux[month-1];
-    const temp = vertex.info.vertexClimate.tempMonth[month-1];
-    const heightMeters = JCellHeight.heightParamToMeters(vertex.info.vertexHeight.height);
-  
-    if (flux > VSIZE_FLUXLIMIT * 25 && temp > -5 && heightMeters < 1000) 
-      out = 3;
-    else if (flux > VSIZE_FLUXLIMIT * 15 && temp > -5 && heightMeters < 1500)
-      out = 2;
-    else if (flux > VSIZE_FLUXLIMIT * 5 && temp > -5 && heightMeters < 2500)
-      out = 1;
-    else 
-      out = 0;
-    
-    return out;
-  }
 }
 
-/** */
+/**
+ * evalIndEdgeNav
+ * @param prevV 
+ * @param currV 
+ * @param month 
+ */
+export const evalIndEdgeNavLevel = (currV: JVertex, prevV: JVertex, month: number, diagram: JDiagram): number => {
+  const edge = diagram.getEdgeFromVertices(prevV, currV);
 
+  const difH = heightParamToMeters(currV.info.height) - 
+    heightParamToMeters(prevV.info.height);
+  const dist = edge.length;
+
+  const desnivel = 0.1*difH/dist; // cm per m
+
+  if (desnivel > 10)
+    return 0;
+  else 
+    return Math.min(
+      evalIndVertexNavLevel(prevV, month, diagram),
+      evalIndVertexNavLevel(currV, month, diagram)
+    );
+}
+
+/**
+ * evalIndVertexNav
+ * @param vertex 
+ * @param month 
+ */
+export const evalIndVertexNavLevel = (vertex: JVertex, month: number, diagram: JDiagram): number => {  
+  let out: number = 0;
+  const VSIZE_FLUXLIMIT = diagram.vertices.size * FLUXLIMITPARAM;
+  const flux = vertex.info.vertexFlux.monthFlux[month-1];
+  const temp = vertex.info.vertexClimate.tempMonth[month-1];
+  const heightMeters = heightParamToMeters(vertex.info.vertexHeight.height);
+
+  if (flux > VSIZE_FLUXLIMIT * 25 && temp > -5 && heightMeters < 1000) 
+    out = 3;
+  else if (flux > VSIZE_FLUXLIMIT * 15 && temp > -5 && heightMeters < 1500)
+    out = 2;
+  else if (flux > VSIZE_FLUXLIMIT * 5 && temp > -5 && heightMeters < 2500)
+    out = 1;
+  else 
+    out = 0;
+  
+  return out;
+}
