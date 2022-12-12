@@ -1,3 +1,4 @@
+import { getArrayOfN } from "../../Math/basicMathFunctions";
 import { TypeInformationKey } from "../../TypeInformationKey";
 import JVertex from "../JVertex";
 import JVertexGeneric, { IJVertexGenericInfo } from "./JVertexGeneric";
@@ -9,6 +10,11 @@ export interface IJVertexFluxInfo extends IJVertexGenericInfo {
 	fluxRouteIds: number[];
 	riverIds: number[];
   navLevelMonth: number[];
+}
+
+export interface IMaxFluxValues {
+  annualMaxFlux: number;
+  monthMaxFlux: number[];
 }
 
 export default class JVertexFlux extends JVertexGeneric {
@@ -47,6 +53,10 @@ export default class JVertexFlux extends JVertexGeneric {
       navLevelMonth: this._navLevelMonth
 		}
 	}
+
+  private static _maxFluxValues: IMaxFluxValues = {annualMaxFlux: 0, monthMaxFlux: getArrayOfN(12,0)};
+  static set maxFluxValues(mfv: IMaxFluxValues) {this._maxFluxValues = mfv}
+  static get maxFluxValues(): IMaxFluxValues {return this._maxFluxValues }
 
 	static getTypeInformationKey(): TypeInformationKey {
 		return 'vertexFlux';

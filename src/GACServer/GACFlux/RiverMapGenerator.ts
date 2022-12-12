@@ -2,7 +2,7 @@ import JDiagram from "../../BuildingModel/Voronoi/JDiagram";
 import InformationFilesManager from '../../DataFileLoadAndSave/InformationFilesManager';
 import JCellClimate from '../../BuildingModel/Voronoi/CellInformation/JCellClimate'
 import JVertex from "../../BuildingModel/Voronoi/JVertex";
-import JVertexFlux, { IJVertexFluxInfo } from "../../BuildingModel/Voronoi/VertexInformation/JVertexFlux";
+import JVertexFlux, { IJVertexFluxInfo, IMaxFluxValues } from "../../BuildingModel/Voronoi/VertexInformation/JVertexFlux";
 import MapGenerator from "../MapGenerator";
 import FluxRouteMap, { IFluxRouteMapInfo } from "../../BuildingModel/MapContainerElements/Natural/FluxRouteMap";
 import RiverMap, { IRiverMapInfo } from "../../BuildingModel/MapContainerElements/Natural/RiverMap";
@@ -84,6 +84,19 @@ export default class RiverMapGenerator extends MapGenerator<IRiverMapGeneratorOu
         RiverMap.getTypeInformationKey()
       );
     }
+
+    // set max flux values
+    let maxFluxValues: IMaxFluxValues = {annualMaxFlux: 0, monthMaxFlux: getArrayOfN(12,0)};
+    this.diagram.forEachVertex((v: JVertex) => {
+      const vfannual = v.info.vertexFlux.annualFlux;
+      if (vfannual > maxFluxValues.annualMaxFlux) maxFluxValues.annualMaxFlux = vfannual;
+      maxFluxValues.monthMaxFlux.forEach((val: number, i: number) => {
+        if (v.info.vertexFlux.monthFlux[i] > val) {
+          maxFluxValues.monthMaxFlux[i] = v.info.vertexFlux.monthFlux[i];
+        }
+      })
+    })
+    JVertexFlux.maxFluxValues = maxFluxValues;
 
     // console.log('routes cant', this._waterRoutesMap.size)
     // console.log('rivers cant', this._rivers.size)
