@@ -1,7 +1,7 @@
 import InformationFilesManager from "../../DataFileLoadAndSave/InformationFilesManager";
 import Grid from "../GACGrid/Grid";
 import MapGenerator from "../MapGenerator";
-import JCellClimate, { IJCellClimateInfo } from "../../BuildingModel/Voronoi/CellInformation/JCellClimate";
+import JCellClimate, { IJCellClimateInfo, IMaxPrecipValues } from "../../BuildingModel/Voronoi/CellInformation/JCellClimate";
 import JCell from "../../BuildingModel/Voronoi/JCell";
 import JDiagram from "../../BuildingModel/Voronoi/JDiagram";
 import JVertex from "../../BuildingModel/Voronoi/JVertex";
@@ -50,7 +50,20 @@ export default class ClimateMapGenerator extends MapGenerator<void> {
 				if (maxAnnualPrecip < ccl.annualPrecip) maxAnnualPrecip = ccl.annualPrecip;
 			}
 		})
-		JCellClimate.maxAnnualPrecip = maxAnnualPrecip;
+    let maxPrecipValues: IMaxPrecipValues = {
+      annual: -1,
+      monthly: getArrayOfN(12,0)
+    }
+    this.diagram.forEachCell((cell: JCell) => {
+			const ccl = cell.info.cellClimate;
+			if (ccl.koppenSubType() !== 'O' && ccl.koppenType() !== 'O') {
+				if (maxPrecipValues.annual < ccl.annualPrecip) maxPrecipValues.annual = ccl.annualPrecip;
+        ccl.precipMonth.forEach((p: number, i:number) => {
+          if (maxPrecipValues.monthly[i] < p) maxPrecipValues.monthly[i] = p;
+        })
+			}
+		})
+		JCellClimate.maxPrecipValues = maxPrecipValues;
 
 	}
 

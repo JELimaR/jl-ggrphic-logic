@@ -1,5 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import chroma from 'chroma-js';
+import IDrawingParameters from './AbstractDrawing/IDrawingParameters';
 import RiverMap from './BuildingModel/MapContainerElements/Natural/RiverMap';
 import { getArrayOfN } from './BuildingModel/Math/basicMathFunctions';
 import Point, { IPoint } from "./BuildingModel/Math/Point";
@@ -7,15 +9,83 @@ import JCellHeight from './BuildingModel/Voronoi/CellInformation/JCellHeight';
 import JCell from "./BuildingModel/Voronoi/JCell";
 import JDiagram from './BuildingModel/Voronoi/JDiagram';
 import JVertex from "./BuildingModel/Voronoi/JVertex";
+import CanvasDrawingMap from './CanvasDrawing/CanvasDrawingMap';
 import { FLUXLIMITPARAM, TypeMonthArr } from './GACServer/constants';
 import MapController from "./MapController";
+import JVertexFlux from './BuildingModel/Voronoi/VertexInformation/JVertexFlux';
+import JCellClimate from './BuildingModel/Voronoi/CellInformation/JCellClimate';
 
 const mc = MapController.instance;
 const rootPath = path.resolve(path.dirname('') + '/');
 
+const colorScale: chroma.Scale = chroma.scale('Spectral').domain([1, 0]);
+
+/**
+ * Costos y cell functions
+ */
+export const drawAlgo = (): (cell: JCell) => IDrawingParameters => {
+  let color: string;
+  return (c: JCell) => {
+    if (c.info.isLand) {
+      color = colorScale(annualFluxCostEVal(c)).alpha(1).hex();
+    } else
+      color = '#F2F9F0C8'
+    return {
+      fillColor: color,
+      strokeColor: color,
+    }
+  }
+}
+
+const annualNavCostEval = (cell: JCell): number => {
+  const vasso = mc.naturalMap.diagram.getVerticesAssociated(cell);
+  const arr = vasso.map(v => 
+    v.info.vertexFlux.navLevelMonth.reduce((c: number, p: number) => c + p)
+  );
+  return Math.max(...arr) / 36;
+}
+
+const minNavCostEval = (cell: JCell): number => {
+  const vasso = mc.naturalMap.diagram.getVerticesAssociated(cell);
+  const arr = vasso.map(v => Math.min(...v.info.vertexFlux.navLevelMonth));
+  return Math.max(...arr) / 3; // ver
+}
+
+const annualFluxCostEVal = (cell: JCell): number => {
+  const vasso = mc.naturalMap.diagram.getVerticesAssociated(cell);
+  const arr = vasso.map(v => 
+    (v.info.vertexFlux.annualFlux / JVertexFlux.annualMaxFlux) ** (1/3)
+  );
+  return Math.max(...arr);
+}
+
+const minFluxCostEval = (cell: JCell): number => {
+  const vasso = mc.naturalMap.diagram.getVerticesAssociated(cell);
+  const arr = vasso.map(v =>
+    (12 * Math.min(...v.info.vertexFlux.monthFlux) / JVertexFlux.annualMaxFlux) ** (1/3)
+  );
+  return Math.max(...arr);
+}
+
 /**
  * Otras cosas
  */
+export const cellDistFromVertex = (c: JCell, v: JVertex) => {
+	const dcen = Point.geogDistance(c.center, v.point);
+	let dmin = 120000;
+	let dmax = 0;
+  let dmed = 0;
+  const vassos = mc.naturalMap.diagram.getVerticesAssociated(c);
+	vassos.forEach((va: JVertex) => {
+		const d = Point.geogDistance(va.point, v.point);
+		if (d < dmin) dmin = d;
+		if (d > dmax) dmax = d;
+    dmed += d/(vassos.length+1);
+	})
+  dmed += dcen/(vassos.length+1);
+	return {dmed, dcen, dmin, dmax};
+}
+
 const coastVertices: JVertex[] = [];
 const getCoastVertices = (): JVertex[] => {
   if (coastVertices.length === 0) {
@@ -61,8 +131,8 @@ export const estadisticasKoppenVSLifeZone = (): void => {
       + '\t' + cc.lifeZone.id 
       + '\t' + `${cc.lifeZone.id < 10 ? 0 : ''}` + cc.lifeZone.id + ' - ' + cc.lifeZone.desc2
       + '\t' + cc.koppenSubType()
-      + '\t' + Math.round(cc.tmax*100)/100  + '\t' +  Math.round(cc.tmin*100)/100
-      + '\t' + Math.round(cc.tmed*100)/100
+      + '\t' + Math.round(cc.tempMonthMax*100)/100  + '\t' +  Math.round(cc.tempMonthMin*100)/100
+      + '\t' + Math.round(cc.tempMed*100)/100
 
       + '\t' + Math.round(cc.precipSemCalido)  + '\t' +  Math.round(cc.precipSemFrio)
       + '\t' + Math.round(cc.annualPrecip)

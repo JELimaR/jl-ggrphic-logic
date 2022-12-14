@@ -11,7 +11,7 @@ export const fluxMedia = () => {
 	return (edge: JEdge): IDrawingParameters => {
 		let verts: JVertex[] = edge.vertices;
 		let fluxPromValue: number = Math.min(verts[0].info.vertexFlux.annualFlux, verts[1].info.vertexFlux.annualFlux);
-    fluxPromValue = 5*(fluxPromValue/JVertexFlux.maxFluxValues.annualMaxFlux) ** 0.4;
+    fluxPromValue = 5*(fluxPromValue/JVertexFlux.annualMaxFlux) ** 0.4;
     // console.log(fluxPromValue)
 		return {
 			fillColor: 'none',
@@ -27,7 +27,7 @@ export const fluxMonth = (month: number) => {
 	return (edge: JEdge): IDrawingParameters => {
 		let verts: JVertex[] = edge.vertices;
     let fluxPromValue: number = Math.min(verts[0].info.vertexFlux.monthFlux[month-1], verts[1].info.vertexFlux.monthFlux[month-1]);
-    fluxPromValue = 5*(fluxPromValue/JVertexFlux.maxFluxValues.monthMaxFlux[month-1]) ** 0.4;
+    fluxPromValue = 5*(fluxPromValue/JVertexFlux.monthMaxFlux[month-1]) ** 0.4;
 		return {
 			fillColor: 'none',
 			strokeColor: colorScale(0.15).hex(),

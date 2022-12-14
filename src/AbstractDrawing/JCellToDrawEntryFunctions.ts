@@ -156,7 +156,7 @@ export const temperatureMedia = () => {
 	const colorScale = chroma.scale('Spectral').domain([30, -35]);
 	return (cell: JCell) => {
 		const ccl = cell.info.cellClimate;
-		const val = Math.round(ccl.tmed / 5) * 5;
+		const val = Math.round(ccl.tempMed / 5) * 5;
 		const color = colorScale(val).hex();
 		return {
 			fillColor: color,

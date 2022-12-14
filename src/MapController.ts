@@ -94,6 +94,13 @@ export default class MapController {
       );
   }
 
+  // borrar
+  forEachMonth(func: (m: number) => any) {
+    for (let i = 1; i <= 12; i++) {
+      func(i);
+    }
+  }
+
   //
   drawingArr(arr: IElementsDrawingEntry[]): void {
     arr.forEach((entry: IElementsDrawingEntry) => {

@@ -63,7 +63,7 @@ export default class CellCost {
     const cc = cell.info.cellClimate;
     if (cc.lifeZone.id === 356) {
       console.log(cell.id, cc.koppenSubType(), '-',
-        Math.round(cc.tmax), Math.round(cc.tmin), Math.round(cc.tmed)
+        Math.round(cc.tempMonthMax), Math.round(cc.tempMonthMin), Math.round(cc.tempMed)
       )
     }
 		if (cell.info.cellHeight.heightType !== 'land')
@@ -81,7 +81,7 @@ export default class CellCost {
   }
   
   static tempCost(cell: JCell, temp: number): number {
-    let out: number = Math.abs(cell.info.cellClimate.tmed - temp) / (65 - temp);
+    let out: number = Math.abs(cell.info.cellClimate.tempMed - temp) / (65 - temp);
     out = inRange(out, 0, 1) ** 1.5;
     return out;
   }

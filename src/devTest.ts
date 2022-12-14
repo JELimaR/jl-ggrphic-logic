@@ -3,7 +3,7 @@ import JCell from "./BuildingModel/Voronoi/JCell";
 import CellCost from "./GACServer/GACCultures/CellCost";
 import MapController from "./MapController";
 import chroma from 'chroma-js';
-import { inDiscreteClasses, getArrayOfN } from './BuildingModel/Math/basicMathFunctions';
+import { inDiscreteClasses, getArrayOfN, heightParamToMeters, inRange } from './BuildingModel/Math/basicMathFunctions';
 import JVertex from './BuildingModel/Voronoi/JVertex';
 import IslandMap from './BuildingModel/MapContainerElements/Natural/IslandMap';
 import Point, { IPoint } from './BuildingModel/Math/Point';
@@ -12,75 +12,69 @@ import FluxRouteMap from './BuildingModel/MapContainerElements/Natural/FluxRoute
 import JCellHeight from './BuildingModel/Voronoi/CellInformation/JCellHeight';
 import { FLUXLIMITPARAM } from './GACServer/constants';
 import RiverMap from './BuildingModel/MapContainerElements/Natural/RiverMap';
-import { isCellCoast } from './temporalAuxFunctions';
+import { drawAlgo, isCellCoast } from './temporalAuxFunctions';
 import NaturalMap from "./BuildingModel/NaturalMap";
-import { heighLand, land } from "./AbstractDrawing/JCellToDrawEntryFunctions";
+import { colors, heighLand, land } from "./AbstractDrawing/JCellToDrawEntryFunctions";
 import { evalIndVertexNavLevel } from "./GACServer/GACFlux/RiverMapGenerator";
+import JVertexFlux from "./BuildingModel/Voronoi/VertexInformation/JVertexFlux";
+import { navMonth } from "./AbstractDrawing/JEdgeToDrawEntryFunctions";
+import JCellClimate from "./BuildingModel/Voronoi/CellInformation/JCellClimate";
 
 const mc = MapController.instance;
 
 const colorScale: chroma.Scale = chroma.scale('Spectral').domain([1, 0]);
 export default (): void => {
   const nm: NaturalMap = mc.naturalMap;
-  console.log(nm.rivers.size);
+  const rivers = nm.rivers;
 
-  const month = 1;
   const cdm = mc.cdm;
 
-  cdm.clear({zoom: 4, center: {x: 22, y: 52}})
-  cdm.drawCellContainer(nm.diagram, land(1));
-  cdm.drawCellContainer(mc.naturalMap.diagram, (c: JCell) => {
-    let color: string = '#FFFFFF00';
-    if (isCellNearNav(c, month)) {
-      color = '#896741B1'
-    }
+  const p: IPoint = { x: -162, y: -13 }
+  const m = 1;
+  //-------------------------------------------------------------------
+  cdm.clear({ zoom: 0, center: p })
+  cdm.drawCellContainer(nm.diagram, (c: JCell) => {
+    let color: string;
+    if (c.info.isLand) {
+      let val = 0.65 * monthFluxParam(c, m) + 0.65 * monthRainFallParam(c, m);
+      color = colorScale(val).hex();
+    } else
+      color = '#F2F9F0C8';
     return {
       fillColor: color,
       strokeColor: color,
     }
   })
-  // cdm.drawMeridianAndParallels();
-  // console.log(cdm.saveDrawFile('nav200'));
-
-  // cdm.clear({zoom: 4, center: {x: 90, y: 8}})
-  // cdm.drawCellContainer(nm.diagram, land(1));
-  
-  nm.rivers.forEach((r: RiverMap) => {
-    cdm.drawEdgeContainer(r, (e: JEdge) => {
-      let val = Math.min(
-        e.vertices[0].info.vertexFlux.navLevelMonth[month-1], 
-        e.vertices[1].info.vertexFlux.navLevelMonth[month-1]
-      );
-      // val = val === 3 ? 3 : 0;
-      let color: string = colorScale(val/3).hex();
-      return {
-        fillColor: color,
-        strokeColor: color,
-      }
-    })
-  })
 
   cdm.drawMeridianAndParallels();
-  console.log(cdm.saveDrawFile('nav3404'));
+  console.log(cdm.saveDrawFile('test45674567'));
+  //-------------------------------------------------------------------
 
-  console.log('Flux limit', nm.diagram.vertices.size*FLUXLIMITPARAM)
-  console.log('MIN nav Flux limit', nm.diagram.vertices.size*FLUXLIMITPARAM*5)
+  const c = nm.diagram.getCellFromPoint(p);
 
-  const v: JVertex = nm.diagram.getVertexFromPoint({x: -11, y:15});
-  
-  console.log(v.info.vertexHeight.getInterface())
-  console.log(v.info.vertexFlux.getInterface())
-  console.log(v.info.vertexFlux.minNavLevel)
-  console.log('eval ind', evalIndVertexNavLevel(v, 8, nm.diagram))
-  console.log(v.info.vertexClimate.getInterface())
 }
 
-const isCellNearNav = (cell: JCell, month: number): boolean => {
-  if (!cell.info.isLand) return false;
-  let out: boolean = false;
-
-  mc.naturalMap.diagram.getVerticesAssociated(cell).forEach((v: JVertex) => {
-    out = out || v.info.vertexFlux.navLevelMonth[month -1] >= 1;
-  })
-  return out;
+const monthTempAuxParam = (c: JCell, month: number): number => {
+  const temp = c.info.cellClimate.tempMonth[month - 1];
+  return 1 - 0.25 * inRange(temp / 30, 0, 1)
 }
+
+const monthRainFallParam = (cell: JCell, month: number): number => {
+  let out;
+  const precip = cell.info.cellClimate.precipMonth[month - 1];
+  out = monthTempAuxParam(cell, month) * (precip / Math.max(...JCellClimate.maxMonthlyPrecip)) ** (0.3);
+  return inRange(out, 0, 1);
+}
+
+const monthFluxParam = (cell: JCell, month: number): number => {
+  let out;
+  const vasso = mc.naturalMap.diagram.getVerticesAssociated(cell);
+  const maxF = Math.max(...JVertexFlux.monthMaxFlux);
+  const arr = vasso.map(v => {
+    const flux = v.info.vertexFlux.monthFlux[month - 1];
+    return (flux / maxF) ** 0.4;
+  });
+  out = monthTempAuxParam(cell, month) * (arr.reduce((c: number, p: number) => c + p) / vasso.length);
+  return inRange(out, 0, 1);
+}
+
