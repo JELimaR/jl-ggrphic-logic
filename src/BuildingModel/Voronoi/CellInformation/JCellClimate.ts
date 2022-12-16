@@ -114,7 +114,9 @@ export default class JCellClimate extends JCellGeneric {
     if (this.precipSemCalido >= 0.7 * this.mediaPrecip) constante = 280;
     else if (this.precipSemCalido < 0.3 * this.mediaPrecip) constante = 0;
     else constante = 140;
-    return (20 * this.tempMed + constante);
+
+    let out = (20 * this.tempMed + constante);
+    return out <= .1 ? .1 : out;
   }
 
   getMonthsSet(): { calido: number[], frio: number[] } {

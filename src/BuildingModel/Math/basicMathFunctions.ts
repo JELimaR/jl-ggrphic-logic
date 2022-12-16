@@ -40,7 +40,7 @@ export const inDiscreteClasses = (value: number, classesCant: number, pow: numbe
   classesCant = Math.round(classesCant);
   let out: number = inRange(value, 0, 1);
   out = Math.pow(out, pow)
-  out = Math.round(out*classesCant)/classesCant;
+  out = Math.round(out*(classesCant))/(classesCant);
 
   return out;
 }
