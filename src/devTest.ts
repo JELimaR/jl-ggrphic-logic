@@ -14,11 +14,12 @@ import { FLUXLIMITPARAM } from './GACServer/constants';
 import RiverMap from './BuildingModel/MapContainerElements/Natural/RiverMap';
 import { drawAlgo, isCellCoast } from './temporalAuxFunctions';
 import NaturalMap from "./BuildingModel/NaturalMap";
-import { colors, heighLand, land } from "./AbstractDrawing/JCellToDrawEntryFunctions";
+import { colors, heighLand, land, temperatureMedia } from "./AbstractDrawing/JCellToDrawEntryFunctions";
 import { evalIndVertexNavLevel } from "./GACServer/GACFlux/RiverMapGenerator";
 import JVertexFlux from "./BuildingModel/Voronoi/VertexInformation/JVertexFlux";
 import { navMonth } from "./AbstractDrawing/JEdgeToDrawEntryFunctions";
 import JCellClimate from "./BuildingModel/Voronoi/CellInformation/JCellClimate";
+import JCellAGR, { IJCellAGRInfo } from "./BuildingModel/Voronoi/CellInformation/JCellAGR";
 
 const mc = MapController.instance;
 
@@ -31,22 +32,11 @@ export default (): void => {
   const nm: NaturalMap = mc.naturalMap;
   const rivers = nm.rivers;
 
-  let MAXwp = 0;
-  nm.diagram.forEachCell((c: JCell) => {
-    if (c.info.isLand) {
-      // const cv = getMaxValForGraph(c);
-      let cv = 0;
-      mc.forEachMonth(m => cv = cv < waterParam(c, m) ? waterParam(c, m) : cv)
-      if (cv > MAXwp) MAXwp = cv
-    }
-  })
-
-  correctionFactorWP = 1 / MAXwp;
-  console.log('correctionFactor WP', correctionFactorWP)
+  const info = generate();
 
   const cdm = mc.showerManager.st.d
-
-  const p: IPoint = { x: -162, y: -13 }
+  
+  const p: IPoint = { x: -107, y: -23.5 }
   // const m = 1;
   //-------------------------------------------------------------------
   // Water Class
@@ -56,14 +46,14 @@ export default (): void => {
     let color: string;
     if (c.info.isLand) {
       let val = 0;
-      // val = getSecWaterClass(c, 4, 4) ? 2 : val;
-      val = getSecWaterClass(c, 5, 6) ? 5 : val;
-      val = getSecWaterClass(c, 7, 8) ? 7 : val;
-      val = getSecWaterClass(c, 9, 11) ? 10 : val;
-      val = getSecWaterClass(c, 12, 13) ? 12 : val;
-      val = getSecWaterClass(c, 14, 15) ? 14 : val;
-      // val = getSecWaterClass(c, 16, 16) ? 16 : val;
-      // val += isCellForest(c) ? 15 : 0;
+      const wls = info.get(c.id)?.WConditionArr;
+      // if (Math.random() < 0.002) console.log(c.id, wls)
+      val = wls?.includes('R0') ? 4 : val;
+      val = wls?.includes('R1') ? 7 : val;
+      val = wls?.includes('R2') ? 10 : val;
+      val = wls?.includes('R3') ? 13 : val;
+      val = wls?.includes('R4') ? 16 : val;
+      // val += info.get(c.id)?.isForest ? 20 : 0;
       area += val !== 0 ? c.area : 0;
       color = colorScale(val).alpha(1).hex();
     } else
@@ -74,18 +64,28 @@ export default (): void => {
     }
   })
   cdm.drawMeridianAndParallels();
-  console.log(cdm.saveDrawFile(`getSecWaterClass`));
+  console.log(cdm.saveDrawFile(`waterClass`));
   console.log('area', area, 'km2')
   //-------------------------------------------------------------------
-  // FOREST
+  // temp Class
   area = 0
   cdm.clear({ zoom: 0, center: p })
   cdm.drawCellContainer(nm.diagram, (c: JCell) => {
     let color: string;
     if (c.info.isLand) {
-      let val = isCellForest(c) ? 16 : 0;
+      let val = 0;
+      const tls = info.get(c.id)?.TConditionArr;
+      // if (Math.random() < 0.001) console.log(c.id, tls)
+      val = tls?.includes('T0') ? 4 : val;
+      val = tls?.includes('T1') ? 7 : val;
+      val = tls?.includes('T2') ? 10 : val;
+      val = tls?.includes('T3') ? 13 : val;
+      val = tls?.includes('T4') ? 16 : val;
+      val = tls?.includes('T5') ? 20 : val;
+      // val = tls?.includes('T4') || tls?.includes('T4') ? 13 : val;
+      // val = tls?.includes('T5') || tls?.includes('T5') ? 16 : val;
       area += val !== 0 ? c.area : 0;
-      color = colorScale(val).alpha(0.99).hex();
+      color = colorScale(val).alpha(1).hex();
     } else
       color = '#F2F9F0';
     return {
@@ -94,130 +94,217 @@ export default (): void => {
     }
   })
   cdm.drawMeridianAndParallels();
-  console.log(cdm.saveDrawFile(`isCellForest`));
+  console.log(cdm.saveDrawFile(`tempMedClass`));
   console.log('area', area, 'km2')
+  //-------------------------------------------------------------------
+  // isCult
+  area = 0
+  let landArea = 0;
+  cdm.clear({ zoom: 0, center: p })
+  cdm.drawCellContainer(nm.diagram, (c: JCell) => {
+    let color: string;
+    if (c.info.isLand) {
+      landArea += c.area;
+      let val = 0;
+      val = info.get(c.id)?.isCult ? 7 : 0;
+      area += val !== 0 ? c.area : 0;
+      // val = info.get(c.id)?.isForest ? 20 : val;
+      color = colorScale(val).alpha(1).hex();
+    } else
+      color = '#F2F9F0';
+    return {
+      fillColor: color,
+      strokeColor: color,
+    }
+  })
+  cdm.drawMeridianAndParallels();
+  console.log(cdm.saveDrawFile(`isCult`));
+  console.log('area', area, 'km2')
+  console.log('rel', (100*area/landArea).toFixed(2), '%')
+  //-------------------------------------------------------------------
+  // isGan
+  area = 0
+  cdm.clear({ zoom: 0, center: p })
+  cdm.drawCellContainer(nm.diagram, (c: JCell) => {
+    let color: string;
+    if (c.info.isLand) {
+      let val = 0;
+      val = info.get(c.id)?.isGan ? 7 : 0;
+      area += val !== 0 ? c.area : 0;
+      // val = info.get(c.id)?.isForest ? 20 : val;
+      color = colorScale(val).alpha(1).hex();
+    } else
+      color = '#F2F9F0';
+    return {
+      fillColor: color,
+      strokeColor: color,
+    }
+  })
+  cdm.drawMeridianAndParallels();
+  console.log(cdm.saveDrawFile(`isGan`));
+  console.log('area', area, 'km2')
+  console.log('rel', (100*area/landArea).toFixed(2), '%')
+  //-------------------------------------------------------------------
+  // FOREST
+  // area = 0
+  // cdm.clear({ zoom: 0, center: p })
+  // cdm.drawCellContainer(nm.diagram, (c: JCell) => {
+  //   let color: string;
+  //   if (c.info.isLand) {
+  //     let val = info.get(c.id)?.isForest ? 16 : 0;
+  //     area += val !== 0 ? c.area : 0;
+  //     color = colorScale(val).alpha(0.99).hex();
+  //   } else
+  //     color = '#F2F9F0';
+  //   return {
+  //     fillColor: color,
+  //     strokeColor: color,
+  //   }
+  // })
+  // cdm.drawMeridianAndParallels();
+  // console.log(cdm.saveDrawFile(`isCellForest`));
+  // console.log('area', area, 'km2')
   //-------------------------------------------------------------------
 
   const c = nm.diagram.getCellFromPoint(p);
-
-}
-
-
-/**
- * Is cell forset
- */
-const isCellForest = (c: JCell): boolean => {
-  const forestMinVal = 9;
-  let minVal = getMinValForGraph(c);
-  // let cont = 0;
-  // mc.forEachMonth(m => {
-  //   if (minVal > forestMinVal) cont++;
-  // })
-  const isF = minVal > forestMinVal && !isCellPermafrost(c)
-  return isF;
-}
-const isCellPermafrost = (c: JCell): boolean => {
-  return c.info.cellClimate.tempMed < -2
+  const ainfo = info.get(c.id) as JCellAGR;
+  console.log(
+    c.id,
+    ainfo.TConditionArr,
+    ainfo.WConditionArr,
+    ainfo.getInterface(),
+    c.info.cellClimate.tempMonth.map(p => p.toFixed(1)),
+    c.info.cellClimate.koppenSubType(),
+    ainfo.isCult ? 'is cult' : '',
+    ainfo.isGan ? 'is gan' : '',
+  )
 }
 
 /**
  * 
  */
-interface IJCellWaterParamInfo {
-  waterParams: number[];
+function generate(): Map<number, JCellAGR> {
+  const diagram = mc.naturalMap.diagram;
+  //
+  console.log('calculate and setting AGR');
+	console.time(`set AGR info`);
+  let out: Map<number, JCellAGR> = new Map<number, JCellAGR>();
+  const data: IJCellAGRInfo[] = generateData();
+
+  diagram.forEachCell((c: JCell) => {
+    const cellAGR = new JCellAGR(c, data[c.id])
+    out.set(c.id, cellAGR);
+  })
+
+  console.timeEnd(`set AGR info`);
+
+  return out;
 }
-function generate() {
+function generateData(): IJCellAGRInfo[] {
   const diagram = mc.naturalMap.diagram;
   //
   let MAXwp = 0;
   diagram.forEachCell((c: JCell) => {
     if (c.info.isLand) {
-      const cv = getMaxValForGraph(c);
-      if (cv > MAXwp) MAXwp = cv
+      let cv = 0;
+      mc.forEachMonth(m => cv = cv < waterParam(c, m) ? waterParam(c, m) : cv)
+      if (cv > MAXwp) MAXwp = cv;
     }
   })
   //
-  const out: Map<number, IJCellWaterParamInfo> = new Map<number, IJCellWaterParamInfo>();
+  const out: IJCellAGRInfo[] = [];
   diagram.forEachCell((c: JCell) => {
-    const icwpi: IJCellWaterParamInfo = {
-      waterParams: getArrayOfN(12, 0),
+    const icwpi: IJCellAGRInfo = {
+      id: c.id,
+      waterCategoryArr: [],
+      medWaterCategory: 0,
+      tempMedCategoryArr: [],
+      tempVarCategoryArr: [],
     }
     getArrayOfN(12, 0).forEach((_, i: number) => {
-      const wp = waterParam(c, i + 1);
-      icwpi.waterParams.push(wp)
+      const wp = waterParam(c, i + 1)/MAXwp;
+      const tp = monthTempMedParam(c, i+1);
+      const vp = monthTempVarParam(c, i+1);
+      icwpi.waterCategoryArr.push(classes * inDiscreteClasses(wp, classes));
+      icwpi.medWaterCategory += wp/12;
+      icwpi.tempMedCategoryArr.push(10 * inDiscreteClasses(tp, 10));
+      icwpi.tempVarCategoryArr.push(3 * inDiscreteClasses(vp, 3));
     })
-    out.set(c.id, icwpi);
-  })
-}
-
-const getSecWaterClass = (c: JCell, minVal: number, maxVal: number): boolean => {
-  let out = false;
-  const pmin = minVal <= 4 ? 4 : minVal - 1;
-  const pmax = maxVal >= 16 ? 16 : maxVal + 1;
-
-  get3ConsecutiveMonthWaterClasses(c).forEach((m3arr: number[]) => {
-    out = out || (
-      (m3arr[0] >= pmin && m3arr[0] <= pmax) &&
-      (m3arr[1] >= minVal && m3arr[1] <= maxVal) &&
-      (m3arr[2] >= minVal && m3arr[2] <= maxVal) &&
-      !isCellPermafrost(c) && !isCellForest(c)
-    )
+    icwpi.medWaterCategory = classes * inDiscreteClasses(icwpi.medWaterCategory, classes)
+    out[c.id] = icwpi;
   })
 
   return out;
 }
 
-const get3ConsecutiveMonthWaterClasses = (c: JCell) => {
-  let out: number[][] = [];
-  mc.forEachMonth((m: number) => {
-    // idx
-    const n = (m == 12) ? 1 : m + 1;
-    const p = (m == 1) ? 12 : m - 1;
-    // values
-    const wpi = inDiscreteClasses(waterParam(c, m), classes) * classes;
-    const wpp = inDiscreteClasses(waterParam(c, p), classes) * classes;
-    const wpn = inDiscreteClasses(waterParam(c, n), classes) * classes;
-    out.push([wpp, wpi, wpn])
-  })
-  return out;
-}
+// const getSecWaterClass = (c: JCell, minVal: number, maxVal: number): boolean => {
+//   let out = false;
+//   const pmin = minVal <= 4 ? 4 : minVal - 1;
+//   const pmax = maxVal >= 16 ? 16 : maxVal + 1;
 
-const getMinValForGraph = (c: JCell) => {
-  let out = 1;
-  mc.forEachMonth(m => out = out > waterParam(c, m) ? waterParam(c, m) : out)
-  return inDiscreteClasses(out, classes) * classes;
-}
+//   get3ConsecutiveMonthWaterCategory(c).forEach((m3arr: number[]) => {
+//     out = out || (
+//       (m3arr[0] >= pmin && m3arr[0] <= pmax) &&
+//       (m3arr[1] >= minVal && m3arr[1] <= maxVal) &&
+//       (m3arr[2] >= minVal && m3arr[2] <= maxVal) &&
+//       !isCellPermafrost(c) && !isCellForest(c)
+//     )
+//   })
 
-const getMin3ValForGraph = (c: JCell) => {
-  let arr: number[] = [];
-  mc.forEachMonth((m: number) => {
-    arr.push(waterParam(c, m))
-  })
-  arr.sort()
-  return inDiscreteClasses(arr[2], classes) * classes;
-}
+//   return out;
+// }
 
-const getMedValForGraph = (c: JCell) => {
-  let out = 0;
-  mc.forEachMonth(m => out += waterParam(c, m))
-  out /= 12;
-  return inDiscreteClasses(out, classes) * classes;
-}
+// const get3ConsecutiveMonthWaterCategory = (c: JCell) => {
+//   let out: number[][] = [];
+//   mc.forEachMonth((m: number) => {
+//     // idx
+//     const n = (m == 12) ? 1 : m + 1;
+//     const p = (m == 1) ? 12 : m - 1;
+//     // values
+//     const wpi = inDiscreteClasses(waterParam2(c, m), classes) * classes;
+//     const wpp = inDiscreteClasses(waterParam2(c, p), classes) * classes;
+//     const wpn = inDiscreteClasses(waterParam2(c, n), classes) * classes;
+//     out.push([wpp, wpi, wpn])
+//   })
+//   return out;
+// }
 
-const getMax3ValForGraph = (c: JCell) => {
-  let arr: number[] = [];
-  mc.forEachMonth((m: number) => {
-    arr.push(waterParam(c, m))
-  })
-  arr.sort()
-  return inDiscreteClasses(arr[9], classes) * classes;
-}
+// const getMinValForGraph = (c: JCell) => {
+//   let out = 1;
+//   mc.forEachMonth(m => out = out > waterParam2(c, m) ? waterParam2(c, m) : out)
+//   return inDiscreteClasses(out, classes) * classes;
+// }
 
-const getMaxValForGraph = (c: JCell) => {
-  let out = 0;
-  mc.forEachMonth(m => out = out < waterParam(c, m) ? waterParam(c, m) : out)
-  return inDiscreteClasses(out, classes) * classes;
-}
+// const getMin3ValForGraph = (c: JCell) => {
+//   let arr: number[] = [];
+//   mc.forEachMonth((m: number) => {
+//     arr.push(waterParam2(c, m))
+//   })
+//   arr.sort()
+//   return inDiscreteClasses(arr[2], classes) * classes;
+// }
+
+// const getMedValForGraph = (c: JCell) => {
+//   let out = 0;
+//   mc.forEachMonth(m => out += waterParam2(c, m))
+//   out /= 12;
+//   return inDiscreteClasses(out, classes) * classes;
+// }
+
+// const getMax3ValForGraph = (c: JCell) => {
+//   let arr: number[] = [];
+//   mc.forEachMonth((m: number) => {
+//     arr.push(waterParam2(c, m))
+//   })
+//   arr.sort()
+//   return inDiscreteClasses(arr[9], classes) * classes;
+// }
+
+// const getMaxValForGraph = (c: JCell) => {
+//   let out = 0;
+//   mc.forEachMonth(m => out = out < waterParam2(c, m) ? waterParam2(c, m) : out)
+//   return inDiscreteClasses(out, classes) * classes;
+// }
 
 const waterParam = (cell: JCell, m: number): number => {
   if (!cell.info.isLand)
@@ -225,8 +312,17 @@ const waterParam = (cell: JCell, m: number): number => {
   const mep = monthEvaporationParam(cell, m);
   const mfp = monthFluxParam(cell, m);
   const mrfp = monthRainFallParam(cell, m)
-  return (0.55 * mfp + 0.70 * mep * mrfp) * correctionFactorWP;
+  return (0.50 * mfp + 0.60 * mep * mrfp);
 }
+
+// const waterParam2 = (cell: JCell, m: number): number => {
+//   if (!cell.info.isLand)
+//     return 0;
+//   const mep = monthEvaporationParam(cell, m);
+//   const mfp = monthFluxParam(cell, m);
+//   const mrfp = monthRainFallParam(cell, m)
+//   return (0.40 * mfp + 0.60 * mep * mrfp) * correctionFactorWP;
+// }
 
 const monthEvaporationParam = (cell: JCell, month: number): number => {
   const precip = cell.info.cellClimate.precipMonth[month - 1];
@@ -251,6 +347,17 @@ const monthFluxParam = (cell: JCell, month: number): number => {
 }
 
 const monthTempMedParam = (cell: JCell, month: number): number => {
-  const temp = cell.info.cellClimate.tempMonth[month - 1];
-  return temp;
+  const out = (Math.round(cell.info.cellClimate.tempMonth[month - 1]) + 5)/40;
+  return inRange(out, 0, 1);
+}
+
+const monthTempVarParam = (cell: JCell, month: number): number => {
+  let out = 0;
+  const tempMax = cell.info.cellClimate.tempMaxArr[month - 1];
+  const tempMin = cell.info.cellClimate.tempMinArr[month - 1];
+  const tempVar = (tempMax - tempMin);
+  if (tempVar < 14) out = 1;
+  else if (tempVar < 19) out = 2/3;
+  else if (tempVar < 25) out = 1/3;
+  return out;
 }

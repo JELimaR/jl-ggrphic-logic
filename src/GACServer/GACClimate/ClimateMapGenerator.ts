@@ -57,9 +57,11 @@ export default class ClimateMapGenerator extends MapGenerator<void> {
     this.diagram.forEachCell((cell: JCell) => {
 			const ccl = cell.info.cellClimate;
 			if (ccl.koppenSubType() !== 'O' && ccl.koppenType() !== 'O') {
-				if (maxPrecipValues.annual < ccl.annualPrecip) maxPrecipValues.annual = ccl.annualPrecip;
+				if (maxPrecipValues.annual < ccl.annualPrecip) {
+					maxPrecipValues.annual = ccl.annualPrecip;
+				}
         ccl.precipMonth.forEach((p: number, i:number) => {
-          if (maxPrecipValues.monthly[i] < p) maxPrecipValues.monthly[i] = p;
+          if (maxPrecipValues.monthly[i] < p)	maxPrecipValues.monthly[i] = p;
         })
 			}
 		})
