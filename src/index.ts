@@ -30,7 +30,7 @@ const listAzgaarFolders: IInitStateOption[] = [
   { folder: 'Maletia80', area: 2100 },      // 3
 ];
 
-const selection: IInitStateOption = listAzgaarFolders[3];
+const selection: IInitStateOption = listAzgaarFolders[0];
 
 const tam = 3600;
 const SIZE: IPoint = { x: tam, y: tam / 2 };
