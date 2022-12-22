@@ -2,11 +2,13 @@
 import JCell from "../JCell";
 import JCellHeight, {IJCellHeightInfo} from './JCellHeight';
 import JCellClimate, {IJCellClimateInfo} from './JCellClimate';
+import JCellAGR, { IJCellAGRInfo } from "./JCellAGR";
 
 export default class JCellInformation {
 	_cell: JCell
 	_height: JCellHeight | undefined;
 	_climate: JCellClimate | undefined;
+  _agr: JCellAGR | undefined;
 	// _temp: JCellTemp | undefined;
 
 	private _mark = false;
@@ -50,5 +52,14 @@ export default class JCellInformation {
 	// 	this._temp!.tempMonth.forEach((t: number) => out += t)
 	// 	return out/12;
 	// }
+
+  /*
+	 * AGR
+	 */
+	setAGRtInfo(a: IJCellAGRInfo): void { this._agr = new JCellAGR(this._cell, a); }
+	getAGRInfo(): IJCellAGRInfo | undefined { return this._agr!.getInterface(); }	
+	get cellAGR(): JCellAGR {
+		return this._agr!;
+	}
 }
 

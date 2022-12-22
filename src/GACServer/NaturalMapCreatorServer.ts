@@ -10,6 +10,7 @@ import VoronoiDiagramCreator from './GACVoronoi/VoronoiDiagramCreator';
 import { IRiverMapGeneratorOut } from '../BuildingModel/INaturalMapCreator';
 import LakeMapGenerator from './GACRelief/LakeMapGenerator';
 import LakeMap from '../BuildingModel/MapContainerElements/Natural/LakeMap';
+import AGRMapGenerator from './GACAGR/AGRMapGenerator';
 
 export default class NaturalMapCreatorServer { // debe tener su diagram?
 	
@@ -70,4 +71,8 @@ export default class NaturalMapCreatorServer { // debe tener su diagram?
 		const lmg: LakeMapGenerator = new LakeMapGenerator(diag);
 		return lmg.generate()
 	}
+  generateAGRMap(diagram: JDiagram) {
+    const amg = new AGRMapGenerator(diagram);
+    amg.generate();
+  }
 }

@@ -3,205 +3,105 @@ import { TypeInformationKey } from "../../TypeInformationKey";
 import JCell from "../JCell";
 import JCellGeneric, { IJCellGenericInfo } from "./JCellGeneric";
 
+export type TCul = {
+  w: number;
+  t: number;
+  v: number;
+} | -1;
+
+export type TGan = {
+  W: number[],
+  T: number[],
+  h: number;
+  conds: {
+    w: number;
+    t: number;
+  }[],
+} | -1;
+
 export interface IJCellAGRInfo extends IJCellGenericInfo {
-  waterCategoryArr: number[];
-  medWaterCategory: number;
-  tempMedCategoryArr: number[];
-  tempVarCategoryArr: number[]; // sens
+  // waterCategoryArr: number[];
+  // rainFallCategoryArr: number[];
+  // medRainFallCategory: number;
+  // tempMedCategoryArr: number[];
+  // tempVarCategoryArr: number[];
+  //
+  ganArr: TGan,
+  culArr: TCul[],
+  f: 1 | 0;
+  p: 1 | 0;
 }
 
 export default class JCellAGR extends JCellGeneric {
-  private _waterCategory: number[];
-  private _medWaterCategory: number;
-  private _tempMedCategoryArr: number[];
-  private _tempVarCategoryArr: number[];
+  // private _waterCategoryArr: number[];
+  // private _rainFallCategoryArr: number[];
+  // private _medRainFallCategory: number;
+  // private _tempMedCategoryArr: number[];
+  // private _tempVarCategoryArr: number[];
+
+  private _ganArr: TGan;
+  private _culArr: TCul[];
+  private _isForest: boolean;
+  private _isPermafrost: boolean;
 
   constructor(c: JCell, info: IJCellAGRInfo) {
     super(c);
 
-    this._waterCategory = [...info.waterCategoryArr];
-    this._tempMedCategoryArr = [...info.tempMedCategoryArr];
-    this._tempVarCategoryArr = [...info.tempVarCategoryArr];
-    this._medWaterCategory = info.medWaterCategory;
+    // this._waterCategoryArr = [...info.waterCategoryArr];
+    // this._rainFallCategoryArr = [...info.rainFallCategoryArr];
+    // this._tempMedCategoryArr = [...info.tempMedCategoryArr];
+    // this._tempVarCategoryArr = [...info.tempVarCategoryArr];
+    // this._medRainFallCategory = info.medRainFallCategory;
+
+    this._ganArr = info.ganArr;
+    this._culArr = info.culArr;
+    this._isForest = info.f == 1;
+    this._isPermafrost = info.p == 1;
   }
 
-  get minWaterCategory(): number { return Math.min(...this._waterCategory) }
-  get maxWaterCategory(): number { return Math.max(...this._waterCategory) }
-  get medWaterCategory(): number { return this._medWaterCategory }
+  // get minWaterCategory(): number { return Math.min(...this._waterCategoryArr) }
+  // get maxWaterCategory(): number { return Math.max(...this._waterCategoryArr) }
+  // get medRainFallCategory(): number { return this._medRainFallCategory }
 
-  get isForest(): boolean { return this.minWaterCategory > 8 && this._medWaterCategory >= 11 && !this.isPermafrost }
-  get isPermafrost(): boolean { return Math.max(...this._tempMedCategoryArr) < 1 }
+  get isForest(): boolean { return this._isForest }
+  get isPermafrost(): boolean { return this._isPermafrost }
 
-  get isCult(): boolean { // borrar
-    let out: boolean = false;
-    getArrayOfN(12,0).forEach((_,i: number) => {
-      const wc = this.WConditionArr[i];
-      const tc = this.TConditionArr[i];
-      const vc = this.VConditionArr[i];
-      out = out || (
-        (wc == 'R4' || wc == 'R3' || wc == 'R2' || wc == 'R1' /*|| wc == 'R0'*/)
-        &&
-        (/*tc == 'T1' || */tc == 'T2' || tc == 'T3' || tc == 'T4'/* || tc == 'T5'*/)
-        &&
-        (/*vc == 'V0' || */vc == 'V1' || vc == 'V2' || vc === 'V3')
-        &&
-        !this.isForest
-      )
+  get isCul(): boolean { // borrar
+    let out: number = 0;
+    this._culArr.forEach((c: TCul) => {
+      if (c !== -1) out++
     })
-    return out;
+    return out > 0;
   }
 
-  get isGan(): boolean { // borrar
-    let out: boolean = false;
-    getArrayOfN(12,0).forEach((_,i: number) => {
-      out = out || (
-        (this.maxWaterCategory <= 16 && this.minWaterCategory >= 4)
-        &&
-        (Math.max(...this._tempMedCategoryArr) <= 9)
-        // &&
-        // (vc == 'V0' || vc == 'V1' || vc == 'V2' || vc === 'V3')
-        &&
-        !this.isForest
-      )
-    })
-    return out;
-  }
-
-  get WConditionArr(): string[] {
-    let out: string[] = []
-    this.get3ConsecutiveWC().forEach((cats3: number[]) => {
-      cats3[0] = cats3[0] <= 4 ? cats3[0] : cats3[0] + 1;
-      const minWP = Math.min(...cats3);
-      cats3[0] = cats3[0] <= 4 ? cats3[0] : cats3[0] - 1;
-      cats3[0] = cats3[0] >= 16 ? cats3[0] : cats3[0] - 1;
-      const maxWP = Math.max(...cats3);
-      cats3[0] = cats3[0] >= 16 ? cats3[0] : cats3[0] + 1;
-      if (minWP >= 4 && maxWP <= 5) out.push('R0') // gan
-      else if (minWP >= 6 && maxWP <= 8) out.push('R1')
-      else if (minWP >= 9 && maxWP <= 11) out.push('R2')
-      else if (minWP >= 12 && maxWP <= 14) out.push('R3')
-      else if (minWP >= 15 && maxWP <= 16) out.push('R4')
-      else out.push('RN')
-    })
-    return out;
-  }
-
-  get TConditionArr(): string[] {
-    let out: string[] = []
-    this.get3ConsecutiveTC().forEach((cats3: number[]) => {
-      // cats3[0] = cats3[0] <= 3 ? cats3[0] : cats3[0] + 1;
-      const minTP = Math.min(...cats3);
-      // cats3[0] = cats3[0] <= 3 ? cats3[0] : cats3[0] - 1;
-      // cats3[0] = cats3[0] >= 8 ? cats3[0] : cats3[0] - 1;
-      const maxTP = Math.max(...cats3);
-      // cats3[0] = cats3[0] >= 8 ? cats3[0] : cats3[0] + 1;
-      if (minTP >= 0 && maxTP <= 0) out.push('T0') // -5 a -4
-      else if (minTP >= 1 && maxTP <= 2) out.push('T1') // gan only -3 a 4
-      else if (minTP >= 3 && maxTP <= 4) out.push('T2') // 5 a 12
-      else if (minTP >= 5 && maxTP <= 6) out.push('T3') // 13 a 20
-      else if (minTP >= 7 && maxTP <= 8) out.push('T4') // 21 a 28
-      else if (minTP >= 9 && maxTP <= 10) out.push('T5') // 29 a 34 // ojo con este
-      else out.push('TN')
-    })
-    return out;
-  }
-
-  get VConditionArr(): string[] {
-    let out: string[] = []
-    this.get3ConsecutiveVC().forEach((cats3: number[]) => {
-      const minTP = Math.min(...cats3);
-      out.push(`V${minTP}`)
-    })
-    return out;
-  }
-
-  private get3ConsecutiveWC(): number[][] {
-    let out: number[][] = [];
-    this.get3ConsecutiveIndexMatrix().forEach((idx3: number[]) => {
-      const p = idx3[0];
-      const m = idx3[1];
-      const n = idx3[2];
-      out.push([
-        this._waterCategory[p],
-        this._waterCategory[m],
-        this._waterCategory[n]
-      ])
-    })
-    return out;
-  }
-  private get3ConsecutiveTC(): number[][] {
-    let out: number[][] = [];
-    this.get3ConsecutiveIndexMatrix().forEach((idx3: number[]) => {
-      const p = idx3[0];
-      const m = idx3[1];
-      const n = idx3[2];
-      out.push([
-        this._tempMedCategoryArr[p],
-        this._tempMedCategoryArr[m],
-        this._tempMedCategoryArr[n]
-      ])
-    })
-    return out;
-  }
-  private get3ConsecutiveVC(): number[][] {
-    let out: number[][] = [];
-    this.get3ConsecutiveIndexMatrix().forEach((idx3: number[]) => {
-      const p = idx3[0];
-      const m = idx3[1];
-      const n = idx3[2];
-      out.push([
-        this._tempVarCategoryArr[p],
-        this._tempVarCategoryArr[m],
-        this._tempVarCategoryArr[n]
-      ])
-    })
-    return out;
-  }
-  private get3ConsecutiveIndexMatrix(): number[][] {
-    let out: number[][] = [];
-    getArrayOfN(12, 0).forEach((_, i: number) => {
-      const m = i;
-      const n = (m == 11) ? 0 : m + 1;
-      const p = (m == 0) ? 11 : m - 1;
-
-      out.push([p, m, n])
-    })
-    return out;
+  get isGan(): boolean { // borrar 
+    return this._ganArr !== -1;
+    // let out: number = 0;
+    // this._ganArr.forEach((g: TGan) => {
+    //   if (g !== -1) out++
+    // })
+    // return out > 0;
   }
 
   getInterface(): IJCellAGRInfo {
     return {
       ...super.getInterface(),
-      waterCategoryArr: this._waterCategory,
-      medWaterCategory: this._medWaterCategory,
-      tempMedCategoryArr: this._tempMedCategoryArr,
-      tempVarCategoryArr: this._tempVarCategoryArr
+      // waterCategoryArr: this._waterCategoryArr,
+      // medRainFallCategory: this._medRainFallCategory,
+      // tempMedCategoryArr: this._tempMedCategoryArr,
+      // tempVarCategoryArr: this._tempVarCategoryArr,
+      // rainFallCategoryArr: this._rainFallCategoryArr,
+
+      ganArr: this._ganArr,
+      culArr: this._culArr,
+      f: this._isForest ? 1 : 0,
+      p: this._isPermafrost ? 1 : 0,
     }
   }
 
   static getTypeInformationKey(): TypeInformationKey {
     return 'cellAGR';
   }
-}
-
-
-const TCONDITION = {
-  TA: 22,
-  TM: 16,
-  TB: 11,
-}
-
-const SENCONDITION = {
-  S: 7,
-  N: 11,
-}
-
-const WCONDITION = {
-  R1: [5, 6],
-  R2: [7, 8],
-  R3: [9, 10, 11],
-  R4: [12, 13],
-  R5: [14, 15],
 }
 
 const annualPeriodCombinations = {
@@ -235,4 +135,10 @@ const annualPeriodCombinations = {
   28: [6, 10],
   29: [6, 11],
   30: [7, 11],
+}
+
+for (let i = 1; i <= 30; i++) {
+  let k = i as keyof typeof annualPeriodCombinations;
+  annualPeriodCombinations[k];
+
 }

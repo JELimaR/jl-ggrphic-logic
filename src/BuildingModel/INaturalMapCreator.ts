@@ -10,6 +10,7 @@ export default interface INaturalMapCreator {
 	generateRiverMaps: (diag: JDiagram) => IRiverMapGeneratorOut;
 	generateIslandMaps: (diag: JDiagram) => IslandMap[];
 	generateLakeMaps: (diag: JDiagram) => LakeMap[];
+  generateAGRMap: (diagram: JDiagram) => any;
 	// verifyDiagramInfoExists
 }
 

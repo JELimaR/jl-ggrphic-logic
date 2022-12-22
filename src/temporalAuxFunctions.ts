@@ -121,12 +121,13 @@ export const isCellCoast = (cell: JCell): boolean => {
   return out;
 }
 
-export const estadisticasKoppenVSLifeZone = (): void => {
+export const estadisticasClimateAndRes = (): void => {
   let printString: string = '';
 
   mc.naturalMap.diagram.forEachCell((cell: JCell) => {
     if (cell.info.isLand) {
       const cc = cell.info.cellClimate;
+      const ca = cell.info.cellAGR;
       printString += cell.id
       + '\t' + cc.lifeZone.id 
       + '\t' + `${cc.lifeZone.id < 10 ? 0 : ''}` + cc.lifeZone.id + ' - ' + cc.lifeZone.desc2
@@ -136,6 +137,7 @@ export const estadisticasKoppenVSLifeZone = (): void => {
 
       + '\t' + Math.round(cc.precipSemCalido)  + '\t' +  Math.round(cc.precipSemFrio)
       + '\t' + Math.round(cc.annualPrecip)
+      + '\t' + (ca.isCul ? 1 : 0) + '\t' + (ca.isGan ? 1 : 0) + '\t' + (ca.isForest ? 1 : 0)
       + '\t' + Math.round(cell.info.cellHeight.heightInMeters)
       + '\t' + Math.round(cell.areaSimple*10)/10
       + '\t' + Math.round(Math.abs(cell.site.point.y))
@@ -143,7 +145,7 @@ export const estadisticasKoppenVSLifeZone = (): void => {
     }
   })
 
-  fs.writeFileSync(rootPath + '/estadisticasKoppenVSLifeZone.jdat', printString);
+  fs.writeFileSync(rootPath + '/estadisticasClimateAndRes.jdat', printString);
 }
 
 export const datosDiagram = (): void => {

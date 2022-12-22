@@ -46,6 +46,13 @@ export default class NaturalMap {
 		return this._lakes;
 	}
 
+  generateAGRInfo() {
+    if (this._rivers.size === 0) {
+      this.setFluxElements();
+    }
+    this._creator.generateAGRMap(this._diagram)
+  }
+
 	private setFluxElements() {
 		const iro: IRiverMapGeneratorOut = this._creator.generateRiverMaps(this._diagram);
 		this._fluxRoutes = iro.fluxRoutes;

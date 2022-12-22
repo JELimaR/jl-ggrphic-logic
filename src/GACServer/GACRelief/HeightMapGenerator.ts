@@ -46,9 +46,9 @@ export default class HeightMapGenerator extends MapGenerator<void> {
 			const cell: JCell = this.diagram.getCellById(hinf.id) as JCell;
 			cell.info.setHeightInfo(hinf);
 		})
-		this.diagram.forEachCell((c: JCell) => {
-			if (!c.info.cellHeight) console.log(c.info.cellHeight)
-		})
+		// this.diagram.forEachCell((c: JCell) => {
+		// 	if (!c.info.cellHeight) console.log(c.info.cellHeight)
+		// })
 
 		// other cells calcs
 		if (!isLoaded) {
