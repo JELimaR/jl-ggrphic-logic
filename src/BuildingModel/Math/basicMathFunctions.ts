@@ -46,7 +46,11 @@ export const inDiscreteClasses = (value: number, classesCant: number, pow: numbe
 }
 
 export const heightParamToMeters = (h: number): number => {
+  if (h < 0.2) {
+    return (h - 0.2) * 33255;
+  } else {
   return 6121.258 * ((h - 0.2)/0.8) ** 1.8;
+  }
 }
 
 export const generateShape = (center: Point, rad: number, m: number): Point[] => {

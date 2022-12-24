@@ -23,179 +23,85 @@ import JCellAGR, { IJCellAGRInfo, TCul } from "./BuildingModel/Voronoi/CellInfor
 import CanvasDrawingMap from "./CanvasDrawing/CanvasDrawingMap";
 import { createICellContainer } from "./BuildingModel/MapContainerElements/containerInterfaces";
 import InformationFilesManager from "./DataFileLoadAndSave/InformationFilesManager";
+import { createNoise2D, NoiseFunction2D } from 'simplex-noise';
+import RandomNumberGenerator from "./BuildingModel/Math/RandomNumberGenerator";
+
 
 const mc = MapController.instance;
 
 let area: number = 0;
+let landArea = 0;
 const colorScale: chroma.Scale = chroma.scale('Spectral').domain([20, 0]);
 
 export default (): void => {
   const nm: NaturalMap = mc.naturalMap;
   const rivers = nm.rivers;
 
-  nm.generateAGRInfo();
+  // nm.generateAGRInfo();
 
   const cdm = mc.showerManager.st.d
 
   const p: IPoint = { x: -137, y: -8 }
   const cell = nm.diagram.getCellFromPoint(p);
-  // const m = 1;
   //-------------------------------------------------------------------
-  // Water Class
-  // area = 0
-  // cdm.clear({ zoom: 0, center: p })
-  // cdm.drawCellContainer(nm.diagram, (c: JCell) => {
-  //   let color: string;
-  //   if (c.info.isLand) {
-  //     let val = 0;
-  //     const wls = info.get(c.id)?.WConditionArr;
-  //     // if (Math.random() < 0.002) console.log(c.id, wls)
-  //     val = wls?.includes('W0') ? 5 : val;
-  //     val = wls?.includes('W1') ? 8 : val;
-  //     val = wls?.includes('W2') ? 11 : val;
-  //     val = wls?.includes('W3') ? 14 : val;
-  //     // val = wls?.includes('W4') ? 16 : val;
-  //     // val += info.get(c.id)?.isForest ? 20 : 0;
-  //     area += val !== 0 ? c.area : 0;
-  //     color = colorScale(val).alpha(1).hex();
-  //   } else
-  //     color = '#F2F9F0';
-  //   return {
-  //     fillColor: color,
-  //     strokeColor: color,
-  //   }
-  // })
-  // cdm.drawMeridianAndParallels();
-  // console.log(cdm.saveDrawFile(`waterClass`));
-  // console.log('area', area, 'km2')
+  // is mine
+  const mvg = new MineValuesGenerator(RandomNumberGenerator.makeRandomFloat(54));
+  const simpleFunc = mvg.simple();
+  const otherFunc = mvg.other();
   //-------------------------------------------------------------------
-  // temp Class
-  // area = 0
-  // cdm.clear({ zoom: 0, center: p })
-  // cdm.drawCellContainer(nm.diagram, (c: JCell) => {
-  //   let color: string;
-  //   if (c.info.isLand) {
-  //     let val = 0;
-  //     const tls = info.get(c.id)?.TConditionArr;
-  //     // if (Math.random() < 0.001) console.log(c.id, tls)
-  //     val = tls?.includes('T0') ? 7 : val;
-  //     val = tls?.includes('T1') ? 12 : val;
-  //     val = tls?.includes('T2') ? 16 : val;
-  //     // val = tls?.includes('T3') ? 13 : val;
-  //     // val = tls?.includes('T4') ? 16 : val;
-  //     // val = tls?.includes('T5') ? 20 : val;
-  //     // val = tls?.includes('T4') || tls?.includes('T4') ? 13 : val;
-  //     // val = tls?.includes('T5') || tls?.includes('T5') ? 16 : val;
-  //     area += val !== 0 ? c.area : 0;
-  //     color = colorScale(val).alpha(1).hex();
-  //   } else
-  //     color = '#F2F9F0';
-  //   return {
-  //     fillColor: color,
-  //     strokeColor: color,
-  //   }
-  // })
-  // cdm.drawMeridianAndParallels();
-  // console.log(cdm.saveDrawFile(`tempMedClass`));
-  // console.log('area', area, 'km2')
-  //-------------------------------------------------------------------
-  // temp var Class
-  // area = 0
-  // cdm.clear({ zoom: 0, center: p })
-  // cdm.drawCellContainer(nm.diagram, (c: JCell) => {
-  //   let color: string;
-  //   if (c.info.isLand) {
-  //     let val = 0;
-  //     const vls = info.get(c.id)?.VConditionArr;
-  //     val = vls?.includes('V0') ? 6 : val;
-  //     val = vls?.includes('V1') ? 11 : val;
-  //     val = vls?.includes('V2') ? 16 : val;
-  //     area += val !== 0 ? c.area : 0;
-  //     color = colorScale(val).alpha(1).hex();
-  //   } else
-  //     color = '#F2F9F0';
-  //   return {
-  //     fillColor: color,
-  //     strokeColor: color,
-  //   }
-  // })
-  // cdm.drawMeridianAndParallels();
-  // console.log(cdm.saveDrawFile(`tempVarClass`));
-  // console.log('area', area, 'km2')
-  //-------------------------------------------------------------------
-  // is agr
   area = 0
-  let ganArea = 0;
-  let culArea = 0;
-  let landArea = 0;
   cdm.clear({ zoom: 0, center: p })
   cdm.drawCellContainer(nm.diagram, (c: JCell) => {
     let color: string;
-    if (c.info.isLand) {
-      const ainfo = c.info.cellAGR;
+    // if (c.info.isLand) {
+      const hinfo = c.info.cellHeight;
       landArea += c.area;
       let val = 0;
-      if (ainfo.isCul) {
-        val += 6;
-        culArea += c.area;
-      }
-      if (ainfo.isGan) {
-        val += 11;
-        ganArea += c.area;
-      }
-      area += val !== 0 ? c.area : 0;
-      color = colorScale(val).alpha(1).hex();
-    } else
-      color = '#F2F9F0';
+      // if (hinfo.heightInMeters > 1108) {
+        val = 1 + 19 * simpleFunc(c);
+        val = inDiscreteClasses(val/20, 20) * 20;
+        area += c.area;
+      // }
+      // area += val !== 0 ? c.area : 0;
+      color = colorScale(val).alpha(1.0).hex();
+    // } else
+    //   color = '#F2F9F0';
     return {
       fillColor: color,
       strokeColor: color,
     }
   })
   cdm.drawMeridianAndParallels();
-  console.log(cdm.saveDrawFile(`isAgr`));
-  console.log('rel total', (100 * area / landArea).toFixed(2), '%')
-  console.log('rel cul', (100 * culArea / landArea).toFixed(2), '%')
-  console.log('rel gan', (100 * ganArea / landArea).toFixed(2), '%')
+  console.log(cdm.saveDrawFile(`simpleFunc`));
+  console.log('rel Area', (100 * area / landArea).toFixed(2), '%')
   //-------------------------------------------------------------------
-  // FOREST
-  area = 0
-  cdm.clear({ zoom: 0, center: p })
-  cdm.drawCellContainer(nm.diagram, (c: JCell) => {
-    let color: string;
-    if (c.info.isLand) {
-      const ainfo = c.info.cellAGR;
-      let val = ainfo.isForest ? 19 : 0;
-      area += val !== 0 ? c.area : 0;
-      color = colorScale(val).alpha(0.99).hex();
-    } else
-      color = '#F2F9F0';
-    return {
-      fillColor: color,
-      strokeColor: color,
-    }
-  })
-  cdm.drawMeridianAndParallels();
-  console.log(cdm.saveDrawFile(`isCellForest`));
-  console.log('area', area, 'km2')
-  console.log('\t', (100 * area / landArea).toFixed(2), '%')
-  //-------------------------------------------------------------------
+  // area = 0
+  // cdm.clear({ zoom: 0, center: p })
+  // cdm.drawCellContainer(nm.diagram, (c: JCell) => {
+  //   let color: string;
+  //   // if (c.info.isLand) {
+  //     const hinfo = c.info.cellHeight;
+  //     let val = 0;
+  //     // if (hinfo.heightInMeters > 1108) {
+  //       val = 1 + 19 * otherFunc(c);
+  //       val = inDiscreteClasses(val/20, 20) * 20;
+  //       area += c.area;
+  //     // }
+  //     // area += val !== 0 ? c.area : 0;
+  //     color = colorScale(val).alpha(1.0).hex();
+  //   // } else
+  //   //   color = '#F2F9F0';
+  //   return {
+  //     fillColor: color,
+  //     strokeColor: color,
+  //   }
+  // })
+  // cdm.drawMeridianAndParallels();
+  // console.log(cdm.saveDrawFile(`otherFunc`));
+  // console.log('rel Area', (100 * area / landArea).toFixed(2), '%')
+  // //-------------------------------------------------------------------
 
-  const agrInfo = cell.info.cellAGR;
-  console.log(
-    cell.id, '\n',
-    JSON.stringify(agrInfo.getInterface(), null, 2),
-    cell.info.cellClimate.tempMonth.map(p => p.toFixed(1)),
-    cell.info.cellClimate.precipMonth.map(p => p.toFixed(1)),
-    nm.diagram.getVerticesAssociated(cell).map((v: JVertex) => {
-      return { rivers: v.info.vertexFlux.riverIds, fluxV: v.info.vertexFlux.annualFlux }
-    }),
-    cell.info.cellClimate.koppenSubType(),
-    agrInfo.isCul ? 'is cul' : '',
-    agrInfo.isGan ? 'is gan' : '',
-  )
-
-  estadisticasClimateAndRes()
+  // estadisticasClimateAndRes()
 }
 
 const drawCellOnly = (c: JCell, cdm: CanvasDrawingMap) => {
@@ -203,3 +109,54 @@ const drawCellOnly = (c: JCell, cdm: CanvasDrawingMap) => {
   cdm.drawCellContainer(createICellContainer([c]), colors({ fillColor: color, strokeColor: color }))
 }
 
+const simpleP = () => {
+
+}
+
+class MineValuesGenerator {
+  private _seedGen: ()=>number;
+  constructor(seedGen: ()=>number) {
+    this._seedGen = seedGen;
+  }
+
+  simple(): (cell: JCell) => number {
+    const noiseFunc = this.create();
+    return (c: JCell) => {
+      let out = 0;
+      out += 1.00 * evalNoiseFunc(noiseFunc, c, 1);
+      out += 0.50 * evalNoiseFunc(noiseFunc, c, 2);
+      out += 0.25 * evalNoiseFunc(noiseFunc, c, 4);
+
+      out /= (1 + 0.5 + 0.25);
+      return out;
+    }
+  }
+
+  other(): (cell: JCell) => number {
+    const noiseFunc = this.create();
+    return (c: JCell) => {
+      let out = 1 * evalNoiseFunc(noiseFunc, c, 1);
+      out += 0.5 * evalNoiseFunc(noiseFunc, c, 2);
+      out += 0.25 * evalNoiseFunc(noiseFunc, c, 4);
+
+      out /= (1 + 0.5 + 0.25);
+      return out;
+    }
+  }
+
+  private create(): NoiseFunction2D {
+    const seed = Math.round(this._seedGen()*18000);
+    console.log('seed:', seed)
+    return createNoise2D(RandomNumberGenerator.makeRandomFloat(seed));
+  }
+}
+
+const evalNoiseFunc = (func: (x: number, y:number)=>number, c: JCell, scale: number): number => {
+  const xdist = (1-Math.abs(c.center.x/180));
+  const ydist = (1-Math.abs(c.center.y/90));
+  const xmask = inRange((xdist/(1-150/180)) ** 2, 0.1 , 1);
+  const ymask = inRange((ydist/(1-70/90)) ** 2, 0.1 , 1);
+	const XDIV = 180 / scale;
+	const YDIV = 90 / scale;
+	return xmask * ymask * (func(c.center.x/XDIV, c.center.y/YDIV) + 1)/2;
+}
