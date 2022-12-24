@@ -64,7 +64,7 @@ export default class PrecipGrid extends DataGrid<IPrecipData> {
 
 			this.grid.forEachPoint((gp: GridPoint, cidx: number, ridx: number) => {
 				out[cidx][ridx].precip = out[cidx][ridx].precip.map((r: number) => {
-					return ((r / 100) ** 1.6) * 3444.1 * (0.15 + 0.85 * Math.cos(gp.point.y * Math.PI / 180))
+					return ((r / 100) ** 1.6) * 3444.1 * ((0.15 + 0.85 * Math.cos(gp.point.y * Math.PI / 180)) ** 2)
 				})
 			})
 

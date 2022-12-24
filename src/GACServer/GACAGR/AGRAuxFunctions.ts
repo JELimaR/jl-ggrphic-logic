@@ -12,10 +12,11 @@ export interface IAGRData {
   tempVarCategoryArr: number[]; // sens
 }
 
-export const isForest = (info: IAGRData): boolean => {
-  const minR = Math.min(...info.rainFallCategoryArr);
-  const medR = info.medRainFallCategory
-  return minR > 8 && medR >= 10;
+export const isForest = (data: IAGRData): boolean => {
+  const minR = Math.min(...data.rainFallCategoryArr);
+  const medR = data.medRainFallCategory
+  const medT = data.tempMedCategoryArr.reduce((p: number, c: number) => p + c) / 12;
+  return minR > 8 && medR >= 11 && medT > 5;
 }
 
 /******************************************************************************************************/
@@ -68,7 +69,7 @@ export const evalTCondition = (cats3: number[]): number => { // no exportar
   if (cats3.length !== 3) throw new Error(`cats3 debe ser de largo 3 ${cats3}`)
   const minTP = Math.min(...cats3);
   const maxTP = Math.max(...cats3);
-  if (minTP >= 9 && maxTP <= 14) return 0 // 5 es de 5 a 8 y 6 es de 9 a 12
+  if (minTP >= 8 && maxTP <= 14) return 0 // 5 es de 5 a 8 y 6 es de 9 a 12
   else if (minTP >= 14 && maxTP <= 21) return 1 // 13 a 20
   else if (minTP >= 21 && maxTP <= 27) return 2 // 9 es de 21 a 24 y 10 es de 25 a 28
   else return -1
@@ -105,7 +106,7 @@ export const getGanInfo = (data: IAGRData): TGan => {
     const waterMonth = data.waterCategoryArr[i];
     const tw = tempMonth + (20 - waterMonth);
     conds.push({t: tempMonth, w: waterMonth});
-    if (tw > 40) twCond++;
+    if (tw > 41) twCond++;
   }
 
   if (twCond > 1) return -1;
@@ -118,7 +119,7 @@ export const getGanInfo = (data: IAGRData): TGan => {
   const medT = data.tempMedCategoryArr.reduce((p: number, c: number) => p + c) / 12;
   const maxT = Math.max(...data.tempMedCategoryArr);
   const isF = isForest(data);
-  if ((( data.h > 0.3 || maxW <= 17) && medW >= 5 && minW >= 3) && (maxT <= 32 && medT <= 25 && medT >= 4 && minT >= -10) && !isF) {
+  if ((( data.h > 0.3 || maxW <= 18) && medW >= 5 && minW >= 3) && (maxT <= 32 && medT <= 25 && medT >= 4 && minT >= -15) && !isF) {
     return {
       W: [minW, medW, maxW],
       T: [minT, medT, maxT],

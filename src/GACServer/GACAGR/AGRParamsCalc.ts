@@ -11,7 +11,7 @@ export const rainParam = (cell: JCell, m: number): number => {
   const precip = cell.info.cellClimate.precipMonth[m - 1];
   const evapParam = inRange(12 * precip / cell.info.cellClimate.pumbral, 0, 1);
   let out = (precip / Math.max(...JCellClimate.maxMonthlyPrecip)) ** (0.3);
-  return 1.25 * evapParam * inRange(out, 0, 1);
+  return 1.3 * evapParam * inRange(out, 0, 1);
 }
 
 export const fluxParam = (cell: JCell, month: number, diagram: JDiagram): number => {
@@ -21,7 +21,7 @@ export const fluxParam = (cell: JCell, month: number, diagram: JDiagram): number
     const flux = v.info.vertexFlux.monthFlux[month - 1];
     return (flux / maxF) ** 0.3;
   });
-  let out = (arr.reduce((c: number, p: number) => c + p) / vasso.length) ** (0.3);
+  let out = (arr.reduce((c: number, p: number) => c + p) / vasso.length) ** (0.28);
   return inRange(out, 0, 1);
 }
 
