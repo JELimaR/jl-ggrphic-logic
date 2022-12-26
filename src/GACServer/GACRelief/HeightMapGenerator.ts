@@ -136,14 +136,14 @@ export default class HeightMapGenerator extends MapGenerator<void> {
 			let cantLand = 0, cantOcean = 0, cantLake = 0;
 			const cells: JCell[] = this.diagram.getCellsAssociated(vertex);
 			cells.forEach((c: JCell) => {
-				const ch = c.info.cellHeight;
-				if (ch.heightType == 'land') {
+				const info = c.info;
+				if (info.heightType == 'land') {
 					cantLand++
-					if (hmin > ch.height) hmin = ch.height
+					if (hmin > info.height) hmin = info.height
 				}
-				else if (ch.heightType == 'lake') cantLake++;
+				else if (info.heightType == 'lake') cantLake++;
 				else cantOcean++;
-				hprom += ch.height;
+				hprom += info.height;
 			})
 			if (cantOcean == 0 && cantLake == 0) {
 				if (hmin == 0) console.log(vertex.id, cantLand)
@@ -214,7 +214,7 @@ export default class HeightMapGenerator extends MapGenerator<void> {
 	private resolveCellsDepressions() {
 		const cellArr: JCell[] = [];
 		this.diagram.forEachCell((c: JCell) => {
-			if (c.info.cellHeight.heightType === 'land') {
+			if (c.info.heightType === 'land') {
 				cellArr.push(c);
 			}
 		})
@@ -263,7 +263,7 @@ export default class HeightMapGenerator extends MapGenerator<void> {
 		while (lista.length > 0 && times < this.diagram.cells.size) {
 			times++;
 			const currCell: JCell = lista.shift() as JCell;
-			currCell.info.cellHeight.heightType = 'ocean';
+			currCell.info.heightType = 'ocean';
 			this.diagram.getCellNeighbours(currCell).forEach((neig: JCell) => {
 				if (!neig.isMarked() && neig.info.height <= 0.20) {
 					lista.push(neig);
@@ -279,8 +279,8 @@ export default class HeightMapGenerator extends MapGenerator<void> {
 
 	private setLakeTypeCell() {
 		this.diagram.forEachCell((c: JCell) => {
-			if (c.info.height <= 0.2 && c.info.cellHeight.heightType !== 'ocean') {
-				c.info.cellHeight.heightType = 'lake';
+			if (c.info.height <= 0.2 && c.info.heightType !== 'ocean') {
+				c.info.heightType = 'lake';
 			}
 		})
 	}

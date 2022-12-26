@@ -42,7 +42,7 @@ export default class LakeMapGenerator extends MapGenerator<LakeMap[]> {
 		const out: LakeMap[] = [];
 		const lista: Map<number, JCell> = new Map<number, JCell>();
 		this.diagram.forEachCell((c: JCell) => {
-			if (c.info.cellHeight.heightType === 'lake') lista.set(c.id, c);
+			if (c.info.heightType === 'lake') lista.set(c.id, c);
 		})
 
 		let currentId = -1;
@@ -66,7 +66,7 @@ export default class LakeMapGenerator extends MapGenerator<LakeMap[]> {
 				// neigh.info.lakeId = newLake.id; // nuevo
 
 				this.diagram.getCellNeighbours(neigh).forEach((nnn: JCell) => {
-					if (nnn.info.cellHeight.heightType === 'lake' && !nnn.isMarked() && !nqeue.has(nnn.id)) {
+					if (nnn.info.heightType === 'lake' && !nnn.isMarked() && !nqeue.has(nnn.id)) {
 						nqeue.set(nnn.id, nnn);
 					}
 				})

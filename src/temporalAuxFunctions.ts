@@ -138,7 +138,7 @@ export const estadisticasClimateAndRes = (): void => {
       + '\t' + Math.round(cc.precipSemCalido)  + '\t' +  Math.round(cc.precipSemFrio)
       + '\t' + Math.round(cc.annualPrecip)
       + '\t' + (ca.isCul ? 1 : 0) + '\t' + (ca.isGan ? 1 : 0) + '\t' + (ca.isForest ? 1 : 0)
-      + '\t' + Math.round(cell.info.cellHeight.heightInMeters)
+      + '\t' + Math.round(cell.info.heightInMeters)
       + '\t' + Math.round(cell.areaSimple*10)/10
       + '\t' + Math.round(Math.abs(cell.site.point.y))
       + '\n';
@@ -153,13 +153,13 @@ export const datosDiagram = (): void => {
   
   mc.naturalMap.diagram.forEachCell((cell: JCell) => {
     if (cell.info.isLand) {
-      const ch = cell.info.cellHeight;
+      const info = cell.info;
       printString += cell.id
       // + '\t' + cell.neighborsId
       + '\t' + `${isCellCoast(cell) ? 'coast' : 'none'}`
 
 
-      + '\t' + Math.round(ch.heightInMeters)
+      + '\t' + Math.round(info.heightInMeters)
       + '\t' + Math.round(cell.areaSimple*10)/10
       + '\n';
     }

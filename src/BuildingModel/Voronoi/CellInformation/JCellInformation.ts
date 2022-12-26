@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import JCell from "../JCell";
-import JCellHeight, {IJCellHeightInfo} from './JCellHeight';
-import JCellClimate, {IJCellClimateInfo} from './JCellClimate';
+import JCellHeight, {IJCellHeightInfo, TypeCellheight} from './JCellHeight';
+import JCellClimate, {IJCellClimateInfo, TKoppenSubType} from './JCellClimate';
 import JCellAGR, { IJCellAGRInfo } from "./JCellAGR";
 
 export default class JCellInformation {
@@ -25,16 +25,20 @@ export default class JCellInformation {
 	 */
 	setHeightInfo(h: IJCellHeightInfo): void { this._height = new JCellHeight(this._cell, h);	}
 	getHeightInfo(): IJCellHeightInfo | undefined { return this._height!.getInterface(); }	
-	get cellHeight(): JCellHeight {
-		return this._height!;
+	/*private*/ get cellHeight(): JCellHeight {
+    if (!this._height) throw new Error(`no se ha generado cellHeigth`)
+		return this._height;
 	}
 	
-	get isLand(): boolean { return this._height!.heightType === 'land' }
-	set height(h: number) { this._height!.height = h }
-	get height(): number { return this._height!.height }
-	get prevHeight(): number { return this._height!.prevHeight }
-
-	set islandId(id: number) { this._height!.islandId = id; } // se puede eliminar
+	set height(h: number) { this.cellHeight.height = h }
+  set heightType(ht: TypeCellheight) { this.cellHeight.heightType = ht }
+	get prevHeight(): number { return this.cellHeight.prevHeight }
+  
+	get isLand(): boolean { return this.cellHeight.heightType === 'land' }
+	get height(): number { return this.cellHeight.height }
+  get heightInMeters(): number { return this.cellHeight.heightInMeters }
+  get heightType(): TypeCellheight { return this.cellHeight.heightType }
+	// set islandId(id: number) { this._height!.islandId = id; } // se puede eliminar
 	get islandId(): number { return this._height!.islandId; }
 
 	/*
@@ -43,10 +47,12 @@ export default class JCellInformation {
 	setClimatetInfo(c: IJCellClimateInfo): void { this._climate = new JCellClimate(this._cell, c);	}
 	getClimateInfo(): IJCellClimateInfo | undefined { return this._climate!.getInterface(); }	
 	get cellClimate(): JCellClimate {
-		return this._climate!;
+		if (!this._climate) throw new Error(`no se ha generado cellClimate`)
+		return this._climate;
 	}
 
-	get tempMonthArr(): number[] { return this._climate!.tempMonth }
+	get tempMonthArr(): number[] { return this.cellClimate.tempMonth }
+  get koppenST(): TKoppenSubType | 'O' { return this.cellClimate.koppenSubType() }
 	// get tempMedia(): number { 
 	// 	let out: number = 0;
 	// 	this._temp!.tempMonth.forEach((t: number) => out += t)
@@ -59,7 +65,8 @@ export default class JCellInformation {
 	setAGRtInfo(a: IJCellAGRInfo): void { this._agr = new JCellAGR(this._cell, a); }
 	getAGRInfo(): IJCellAGRInfo | undefined { return this._agr!.getInterface(); }	
 	get cellAGR(): JCellAGR {
-		return this._agr!;
+		if (!this._agr) throw new Error(`no se ha generado cellAGR`)
+		return this._agr;
 	}
 }
 

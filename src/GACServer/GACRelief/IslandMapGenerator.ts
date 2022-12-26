@@ -79,7 +79,7 @@ export default class IslandMapGenerator extends MapGenerator<IslandMap[]> {
 				lista.delete(neigh.id);
 				neigh.mark();
 				isl.addCell(neigh);
-				neigh.info.islandId = isl.id; // nuevo
+				// neigh.info.islandId = isl.id; // nuevo
 
 				this.diagram.getCellNeighbours(neigh).forEach((nnn: JCell) => {
 					if (nnn.info.isLand && !nnn.isMarked() && !nqeue.has(nnn.id)) {

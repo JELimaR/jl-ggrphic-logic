@@ -66,7 +66,7 @@ export default class CellCost {
         Math.round(cc.tempMonthMax), Math.round(cc.tempMonthMin), Math.round(cc.tempMed)
       )
     }
-		if (cell.info.cellHeight.heightType !== 'land')
+		if (cell.info.heightType !== 'land')
 			out = Infinity;
     else
 		  out = 0.5 * this.precipCost(cell) + 0.5 * this.tempCost(cell, 15);

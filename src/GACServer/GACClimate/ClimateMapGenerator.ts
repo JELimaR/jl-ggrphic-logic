@@ -81,8 +81,8 @@ export default class ClimateMapGenerator extends MapGenerator<void> {
 			const gp = grid.getGridPoint(c.center);
 			const precData: IPrecipData = precipGrid.getPointInfo(gp.point);
 			const temps = [...tempGrid.getPointInfo(gp.point).tempMonth];
-			const chf = c.info.isLand ? 6.5 * c.info.cellHeight.heightInMeters / 1000 : 0;
-			const ghf = gp.cell.info.isLand ? 6.5 * gp.cell.info.cellHeight.heightInMeters / 1000 : 0;
+			const chf = c.info.isLand ? 6.5 * c.info.heightInMeters / 1000 : 0;
+			const ghf = gp.cell.info.isLand ? 6.5 * gp.cell.info.heightInMeters / 1000 : 0;
 			climateData[c.id] = {
 				id: c.id,
 				precipMonth: [...precData.precip],
