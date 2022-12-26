@@ -52,7 +52,7 @@ export default class JCellInformation {
 	}
 
 	get tempMonthArr(): number[] { return this.cellClimate.tempMonth }
-  get koppenST(): TKoppenSubType | 'O' { return this.cellClimate.koppenSubType() }
+  get koppenSubType(): TKoppenSubType | 'O' { return this.cellClimate.koppenSubType() }
 	// get tempMedia(): number { 
 	// 	let out: number = 0;
 	// 	this._temp!.tempMonth.forEach((t: number) => out += t)

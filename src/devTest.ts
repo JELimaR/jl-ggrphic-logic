@@ -31,13 +31,27 @@ const mc = MapController.instance;
 
 let area: number = 0;
 let landArea = 0;
-const colorScale: chroma.Scale = chroma.scale('Spectral').domain([20, 0]);
+// const colorScale: chroma.Scale = chroma.scale('Spectral').domain([1, 0]);
+const colorScale: chroma.Scale = chroma.scale();
 
-const standFrec = 1;
+//
+
+const entry: IMineFunctionEntry = {
+  fundamental: 6,
+  harmonics: 6,
+
+  genExponent: 2,
+
+  hExponent: 0,
+  hMin: 0.0,
+
+  fluxExponent: 0,
+  fluxNegative: false,
+}
 
 export default (): void => {
   const nm: NaturalMap = mc.naturalMap;
-  nm.diagram.forEachCell(c => landArea += c.info.cellHeight.heightType == 'land' ? c.area : 0)
+  nm.diagram.forEachCell(c => landArea += c.info.heightType == 'land' ? c.area : 0)
   const rivers = nm.rivers;
 
   // nm.generateAGRInfo();
@@ -48,19 +62,30 @@ export default (): void => {
   const cell = nm.diagram.getCellFromPoint(p);
   //-------------------------------------------------------------------
   // is mine
-  const mvg = new MineValuesGenerator(RandomNumberGenerator.makeRandomFloat(54));
-  const simpleFunc = mvg.simple();
+  const mvg = new MineValuesGenerator(RandomNumberGenerator.makeRandomInt(16));
+  const genFunc = mvg.generateNewFunction(entry);
   //-------------------------------------------------------------------
   area = 0
+  let maxValue = 0;
+  let minValue = 0;
+  let sumValue = 0;
   cdm.clear({ zoom: 0, center: p })
   cdm.drawCellContainer(nm.diagram, (c: JCell) => {
     let color: string;
     // if (c.info.isLand) {
-    const hinfo = c.info.cellHeight;
+    const info = c.info;
     let val = 0;
     // if (hinfo.heightInMeters > 1108) {
-    val = 1 + 19 * simpleFunc(c) ** 2;
-    val = inDiscreteClasses(val / 20, 20) * 20;
+    val = genFunc(c);
+    // const narr = nm.diagram.getCellNeighbours(c);
+    // narr.forEach(n => val += genFunc(n)/narr.length);
+    // val = 0.6 * genFunc(c) + 0.4 * val;
+    
+    
+    if (val > maxValue) maxValue = val;
+    if (val < minValue) minValue = val;
+    sumValue += val;
+    // val = inDiscreteClasses(val, 20);
     // area += c.area;
     // }
     // area += val !== 0 ? c.area : 0;
@@ -73,7 +98,11 @@ export default (): void => {
     }
   })
   cdm.drawMeridianAndParallels();
-  console.log(cdm.saveDrawFile(`simpleFunc${standFrec}`));
+  console.log(cdm.saveDrawFile(`minerals`));
+  console.log(cdm.saveDrawFile(`minerals__f${entry.fundamental}_h${entry.harmonics}_ge${entry.genExponent}_he${entry.hExponent}_hm${entry.hMin}_fe${entry.fluxExponent}_fn${entry.fluxNegative ? 'T' : 'F'}`));
+  console.log('maxValue', maxValue)
+  console.log('sumValue', sumValue, (sumValue/nm.diagram.cells.size).toFixed(4))
+  console.log('minValue', minValue)
   // console.log('area', area.toFixed(2), 'km2')
   //-------------------------------------------------------------------
   // const otherFunc = mvg.other();
@@ -148,47 +177,52 @@ const drawCellOnly = (c: JCell, cdm: CanvasDrawingMap) => {
   cdm.drawCellContainer(createICellContainer([c]), colors({ fillColor: color, strokeColor: color }))
 }
 
-const simpleP = () => {
-
+interface IMineFunctionEntry {
+  harmonics: number;
+  fundamental: number;
+  genExponent: number;
+  hExponent: number;
+  hMin: number;
+  fluxExponent: number;
+  fluxNegative: boolean;
 }
 
 class MineValuesGenerator {
-  private _seedGen: () => number;
-  constructor(seedGen: () => number) {
+  private _seedGen: (N: number) => number;
+  constructor(seedGen: (N: number) => number) {
     this._seedGen = seedGen;
   }
 
-  simple(): (cell: JCell) => number {
+  generateNewFunction(mfe: IMineFunctionEntry): (cell: JCell) => number {
     const noiseFunc = this.create();
-    return (c: JCell) => {
-      let out = 0;
-      out += 1.00 * evalNoiseFunc(noiseFunc, c, 1*standFrec);
-      out += 0.50 * evalNoiseFunc(noiseFunc, c, 2*standFrec);
-      out += 0.25 * evalNoiseFunc(noiseFunc, c, 4*standFrec);
 
-      out /= (1 + 0.5 + 0.25);
-      return out;
-    }
-  }
-
-  other(): (cell: JCell) => number {
-    const noiseFunc = this.create();
+    const h = mfe.harmonics;
+    const f = mfe.fundamental;
+    const ge = mfe.genExponent;
+    const he = mfe.hExponent;
+    const hm = mfe.hMin;
+    const fe = mfe.fluxExponent;
+    const fn = mfe.fluxNegative;
     return (c: JCell) => {
+      if (c.info.height < hm) return 0;
       let out = 0;
-      for (let i = 1; i <= 6; i++) {
-        out += 1/i * evalNoiseFunc(noiseFunc, c, (2**(i-1))*standFrec);
+      let sum = 0;
+      for (let i = 0; i < h; i++) {
+        const param = 2**i;
+        out += 1/param * evalNoiseFunc(noiseFunc, c, param*f);
+        sum += 1/param;
       }
-      // out += 1.00 * evalNoiseFunc(noiseFunc, c, 1*standFrec);
-      // out += 0.50 * evalNoiseFunc(noiseFunc, c, 2*standFrec);
-      // out += 0.25 * evalNoiseFunc(noiseFunc, c, 4*standFrec);
 
-      out /= (1 + 0.5 + 0.25);
-      return out;
+      out = out/sum;
+      out *= ((c.info.height - hm)/(1-hm)) ** he;
+      out *= (fn ? (1 - annualFluxCell(c)) : annualFluxCell(c)) ** fe;
+      out = out ** ge;
+      return Math.round(out*10000)/10000;
     }
   }
 
   private create(): NoiseFunction2D {
-    const seed = Math.round(this._seedGen() * 18000);
+    const seed = this._seedGen(18000);
     console.log('seed:', seed)
     return createNoise2D(RandomNumberGenerator.makeRandomFloat(seed));
   }
@@ -197,9 +231,18 @@ class MineValuesGenerator {
 const evalNoiseFunc = (func: (x: number, y: number) => number, c: JCell, scale: number): number => {
   const xdist = (1 - Math.abs(c.center.x / 180));
   const ydist = (1 - Math.abs(c.center.y / 90));
-  const xmask = inRange((xdist / (1 - 150 / 180)) ** 0.5, 0, 1);
-  const ymask = inRange((ydist / (1 - 70 / 90)) ** 0.5, 0, 1);
+  const xmask = inRange((xdist / (1 - 80 / 180)) ** 0.1, 0, 1);
+  const ymask = inRange((ydist / (1 - 40 / 90)) ** 0.1, 0, 1);
   const XDIV = 180 / scale;
   const YDIV = 90 / scale;
-  return xmask * ymask * (func(c.center.x / XDIV, c.center.y / YDIV) + 1) / 2;
+  return /*xmask * ymask */ (func(c.center.x / XDIV, c.center.y / YDIV) + 1) / 2;
+}
+
+const annualFluxCell = (cell: JCell): number => {
+  if (cell.info.heightType !== 'land') return 0;
+  const vasso = mc.naturalMap.diagram.getVerticesAssociated(cell);
+  const arr = vasso.map(v => 
+    (v.info.vertexFlux.annualFlux / JVertexFlux.annualMaxFlux) ** (1/3)
+  );
+  return Math.max(...arr);
 }
