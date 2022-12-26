@@ -33,12 +33,14 @@ let area: number = 0;
 let landArea = 0;
 const colorScale: chroma.Scale = chroma.scale('Spectral').domain([20, 0]);
 
+const standFrec = 1;
+
 export default (): void => {
   const nm: NaturalMap = mc.naturalMap;
   nm.diagram.forEachCell(c => landArea += c.info.cellHeight.heightType == 'land' ? c.area : 0)
   const rivers = nm.rivers;
 
-  nm.generateAGRInfo();
+  // nm.generateAGRInfo();
 
   const cdm = mc.showerManager.st.d
 
@@ -57,9 +59,9 @@ export default (): void => {
     const hinfo = c.info.cellHeight;
     let val = 0;
     // if (hinfo.heightInMeters > 1108) {
-    val = 1 + 19 * simpleFunc(c);
+    val = 1 + 19 * simpleFunc(c) ** 2;
     val = inDiscreteClasses(val / 20, 20) * 20;
-    area += c.area;
+    // area += c.area;
     // }
     // area += val !== 0 ? c.area : 0;
     color = colorScale(val).alpha(1.0).hex();
@@ -71,8 +73,8 @@ export default (): void => {
     }
   })
   cdm.drawMeridianAndParallels();
-  console.log(cdm.saveDrawFile(`simpleFunc`));
-  console.log('rel Area', (100 * area / landArea).toFixed(2), '%')
+  console.log(cdm.saveDrawFile(`simpleFunc${standFrec}`));
+  // console.log('area', area.toFixed(2), 'km2')
   //-------------------------------------------------------------------
   // const otherFunc = mvg.other();
   // area = 0
@@ -101,44 +103,44 @@ export default (): void => {
   // console.log('rel Area', (100 * area / landArea).toFixed(2), '%')
   // //-------------------------------------------------------------------
 
-  // estadisticasClimateAndRes()
-  area = 0;
-  let culArea = 0;
-  let ganArea = 0;
-  let forArea = 0;
-  cdm.clear({ zoom: 0, center: p })
-  cdm.drawCellContainer(nm.diagram, (c: JCell) => {
-    let color: string;
-    if (c.info.isLand) {
-      const ainfo = c.info.cellAGR;
-      let val = 0;
-      if (ainfo.isCul) {
-        val += 7;
-        culArea += c.area;
-      }
-      if (ainfo.isGan) {
-        val += 11;
-        ganArea += c.area;
-      }
-      area += val != 0 ? c.area : 0;
-      color = colorScale(val).alpha(1.0).hex();
-      if (ainfo.isForest) {
-        color = '#121719';
-        forArea += c.area;
-      }
-    } else
-      color = '#F2F9F0';
-    return {
-      fillColor: color,
-      strokeColor: color,
-    }
-  })
-  cdm.drawMeridianAndParallels();
-  console.log(cdm.saveDrawFile(`isAgr`));
-  console.log('rel Area', (100 * area / landArea).toFixed(2), '%')
-  console.log('cul area', culArea.toFixed(0), 'km2\t', (100 * culArea / landArea).toFixed(2), '%')
-  console.log('gan Area', ganArea.toFixed(0), 'km2\t', (100 * ganArea / landArea).toFixed(2), '%')
-  console.log('for Area', forArea.toFixed(0), 'km2\t', (100 * forArea / landArea).toFixed(2), '%')
+  // estadisticasClimateAndRes();
+  // area = 0;
+  // let culArea = 0;
+  // let ganArea = 0;
+  // let forArea = 0;
+  // cdm.clear({ zoom: 0, center: p })
+  // cdm.drawCellContainer(nm.diagram, (c: JCell) => {
+  //   let color: string;
+  //   if (c.info.isLand) {
+  //     const ainfo = c.info.cellAGR;
+  //     let val = 0;
+  //     if (ainfo.isCul) {
+  //       val += 7;
+  //       culArea += c.area;
+  //     }
+  //     if (ainfo.isGan) {
+  //       val += 11;
+  //       ganArea += c.area;
+  //     }
+  //     area += val != 0 ? c.area : 0;
+  //     color = colorScale(val).alpha(1.0).hex();
+  //     if (ainfo.isForest) {
+  //       color = '#121719';
+  //       forArea += c.area;
+  //     }
+  //   } else
+  //     color = '#F2F9F0';
+  //   return {
+  //     fillColor: color,
+  //     strokeColor: color,
+  //   }
+  // })
+  // cdm.drawMeridianAndParallels();
+  // console.log(cdm.saveDrawFile(`isAgr`));
+  // console.log('rel Area', (100 * area / landArea).toFixed(2), '%')
+  // console.log('cul area', culArea.toFixed(0), 'km2\t', (100 * culArea / landArea).toFixed(2), '%')
+  // console.log('gan Area', ganArea.toFixed(0), 'km2\t', (100 * ganArea / landArea).toFixed(2), '%')
+  // console.log('for Area', forArea.toFixed(0), 'km2\t', (100 * forArea / landArea).toFixed(2), '%')
 }
 
 const drawCellOnly = (c: JCell, cdm: CanvasDrawingMap) => {
@@ -160,9 +162,9 @@ class MineValuesGenerator {
     const noiseFunc = this.create();
     return (c: JCell) => {
       let out = 0;
-      out += 1.00 * evalNoiseFunc(noiseFunc, c, 1);
-      out += 0.50 * evalNoiseFunc(noiseFunc, c, 2);
-      out += 0.25 * evalNoiseFunc(noiseFunc, c, 4);
+      out += 1.00 * evalNoiseFunc(noiseFunc, c, 1*standFrec);
+      out += 0.50 * evalNoiseFunc(noiseFunc, c, 2*standFrec);
+      out += 0.25 * evalNoiseFunc(noiseFunc, c, 4*standFrec);
 
       out /= (1 + 0.5 + 0.25);
       return out;
@@ -172,9 +174,13 @@ class MineValuesGenerator {
   other(): (cell: JCell) => number {
     const noiseFunc = this.create();
     return (c: JCell) => {
-      let out = 1 * evalNoiseFunc(noiseFunc, c, 1);
-      out += 0.5 * evalNoiseFunc(noiseFunc, c, 2);
-      out += 0.25 * evalNoiseFunc(noiseFunc, c, 4);
+      let out = 0;
+      for (let i = 1; i <= 6; i++) {
+        out += 1/i * evalNoiseFunc(noiseFunc, c, (2**(i-1))*standFrec);
+      }
+      // out += 1.00 * evalNoiseFunc(noiseFunc, c, 1*standFrec);
+      // out += 0.50 * evalNoiseFunc(noiseFunc, c, 2*standFrec);
+      // out += 0.25 * evalNoiseFunc(noiseFunc, c, 4*standFrec);
 
       out /= (1 + 0.5 + 0.25);
       return out;
@@ -191,8 +197,8 @@ class MineValuesGenerator {
 const evalNoiseFunc = (func: (x: number, y: number) => number, c: JCell, scale: number): number => {
   const xdist = (1 - Math.abs(c.center.x / 180));
   const ydist = (1 - Math.abs(c.center.y / 90));
-  const xmask = inRange((xdist / (1 - 150 / 180)) ** 0.5, 0.1, 1);
-  const ymask = inRange((ydist / (1 - 70 / 90)) ** 0.5, 0.1, 1);
+  const xmask = inRange((xdist / (1 - 150 / 180)) ** 0.5, 0, 1);
+  const ymask = inRange((ydist / (1 - 70 / 90)) ** 0.5, 0, 1);
   const XDIV = 180 / scale;
   const YDIV = 90 / scale;
   return xmask * ymask * (func(c.center.x / XDIV, c.center.y / YDIV) + 1) / 2;
