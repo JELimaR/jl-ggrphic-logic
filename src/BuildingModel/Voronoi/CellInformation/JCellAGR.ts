@@ -20,12 +20,6 @@ export type TGan = {
 } | -1;
 
 export interface IJCellAGRInfo extends IJCellGenericInfo {
-  // waterCategoryArr: number[];
-  // rainFallCategoryArr: number[];
-  // medRainFallCategory: number;
-  // tempMedCategoryArr: number[];
-  // tempVarCategoryArr: number[];
-  //
   ganArr: TGan,
   culArr: TCul[],
   f: 1 | 0;
@@ -33,11 +27,6 @@ export interface IJCellAGRInfo extends IJCellGenericInfo {
 }
 
 export default class JCellAGR extends JCellGeneric {
-  // private _waterCategoryArr: number[];
-  // private _rainFallCategoryArr: number[];
-  // private _medRainFallCategory: number;
-  // private _tempMedCategoryArr: number[];
-  // private _tempVarCategoryArr: number[];
 
   private _ganArr: TGan;
   private _culArr: TCul[];
@@ -47,21 +36,11 @@ export default class JCellAGR extends JCellGeneric {
   constructor(c: JCell, info: IJCellAGRInfo) {
     super(c);
 
-    // this._waterCategoryArr = [...info.waterCategoryArr];
-    // this._rainFallCategoryArr = [...info.rainFallCategoryArr];
-    // this._tempMedCategoryArr = [...info.tempMedCategoryArr];
-    // this._tempVarCategoryArr = [...info.tempVarCategoryArr];
-    // this._medRainFallCategory = info.medRainFallCategory;
-
     this._ganArr = info.ganArr;
     this._culArr = info.culArr;
     this._isForest = info.f == 1;
     this._isPermafrost = info.p == 1;
   }
-
-  // get minWaterCategory(): number { return Math.min(...this._waterCategoryArr) }
-  // get maxWaterCategory(): number { return Math.max(...this._waterCategoryArr) }
-  // get medRainFallCategory(): number { return this._medRainFallCategory }
 
   get isForest(): boolean { return this._isForest }
   get isPermafrost(): boolean { return this._isPermafrost }
@@ -74,23 +53,13 @@ export default class JCellAGR extends JCellGeneric {
     return out > 0;
   }
 
-  get isGan(): boolean { // borrar 
+  get isGan(): boolean { 
     return this._ganArr !== -1;
-    // let out: number = 0;
-    // this._ganArr.forEach((g: TGan) => {
-    //   if (g !== -1) out++
-    // })
-    // return out > 0;
   }
 
   getInterface(): IJCellAGRInfo {
     return {
       ...super.getInterface(),
-      // waterCategoryArr: this._waterCategoryArr,
-      // medRainFallCategory: this._medRainFallCategory,
-      // tempMedCategoryArr: this._tempMedCategoryArr,
-      // tempVarCategoryArr: this._tempVarCategoryArr,
-      // rainFallCategoryArr: this._rainFallCategoryArr,
 
       ganArr: this._ganArr,
       culArr: this._culArr,
