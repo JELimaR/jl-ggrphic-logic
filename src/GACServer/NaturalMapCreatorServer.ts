@@ -10,7 +10,7 @@ import VoronoiDiagramCreator from './GACVoronoi/VoronoiDiagramCreator';
 import { IRiverMapGeneratorOut } from '../BuildingModel/INaturalMapCreator';
 import LakeMapGenerator from './GACRelief/LakeMapGenerator';
 import LakeMap from '../BuildingModel/MapContainerElements/Natural/LakeMap';
-import AGRMapGenerator from './GACAGR/AGRMapGenerator';
+import AGRMapGenerator from './GACNaturalRes/AGRMapGenerator';
 
 export default class NaturalMapCreatorServer { // debe tener su diagram?
 	
