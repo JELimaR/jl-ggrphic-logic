@@ -58,15 +58,6 @@ export default class AGRMapGenerator extends MapGenerator<void> {
           f: 0,
           p: 1,
         };
-      // si es forest, no calculo el resto:
-      /*} else if (this.isCellForest(c)) {
-        out[c.id] = {
-          id: c.id,
-          gan: -1,
-          culArr: getArrayOfN(12,-1) as TCul[],
-          f: 1,
-          p: 0,
-        };*/
       } else {
         const cc = c.info.cellClimate;
         const agrData: IAGRData = {

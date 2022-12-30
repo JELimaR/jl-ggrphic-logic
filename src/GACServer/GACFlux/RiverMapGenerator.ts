@@ -97,6 +97,7 @@ export default class RiverMapGenerator extends MapGenerator<IRiverMapGeneratorOu
       })
     })
     JVertexFlux.maxFluxValues = maxFluxValues;
+    // set cells flux values
 
     // console.log('routes cant', this._waterRoutesMap.size)
     // console.log('rivers cant', this._rivers.size)

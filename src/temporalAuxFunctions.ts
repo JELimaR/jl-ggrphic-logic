@@ -27,7 +27,7 @@ export const drawAlgo = (): (cell: JCell) => IDrawingParameters => {
   let color: string;
   return (c: JCell) => {
     if (c.info.isLand) {
-      color = colorScale(annualFluxCostEVal(c)).alpha(1).hex();
+      color = colorScale(annualFluxCell(c)).alpha(1).hex();
     } else
       color = '#F2F9F0C8'
     return {
@@ -51,7 +51,8 @@ const minNavCostEval = (cell: JCell): number => {
   return Math.max(...arr) / 3; // ver
 }
 
-const annualFluxCostEVal = (cell: JCell): number => {
+export const annualFluxCell = (cell: JCell): number => {
+  if (cell.info.heightType !== 'land') return 0;
   const vasso = mc.naturalMap.diagram.getVerticesAssociated(cell);
   const arr = vasso.map(v => 
     (v.info.vertexFlux.annualFlux / JVertexFlux.annualMaxFlux) ** (1/3)

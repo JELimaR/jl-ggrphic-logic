@@ -19,6 +19,17 @@ export const isForest = (data: IAGRData): boolean => {
   return minR > 8 && medR >= 11 && medT > 5;
 }
 
+export const woodLevel = (data: IAGRData): number => {// ?
+  const minR = Math.min(...data.rainFallCategoryArr);
+  const medR = data.medRainFallCategory
+  const medT = data.tempMedCategoryArr.reduce((p: number, c: number) => p + c) / 12;
+  if (minR > 5 && medR >= 7 && medT > 4) {
+    return ((medR - 7)/13) ** 0.5
+  }
+
+  return 0;
+}
+
 /******************************************************************************************************/
 /**
  * CUL
@@ -119,7 +130,7 @@ export const getGanInfo = (data: IAGRData): TGan => {
   const medT = data.tempMedCategoryArr.reduce((p: number, c: number) => p + c) / 12;
   const maxT = Math.max(...data.tempMedCategoryArr);
   const isF = isForest(data);
-  if ((( data.h > 0.3 || maxW <= 18) && medW >= 5 && minW >= 3) && (maxT <= 32 && medT <= 25 && medT >= 4 && minT >= -15) && !isF) {
+  if ((( data.h > 0.3 || maxW <= 18) && medW >= 5 && minW >= 3) && (maxT <= 33 && medT <= 26 && medT >= 4 && minT >= -15) && !isF) {
     return {
       W: [minW, medW, maxW],
       T: [minT, medT, maxT],
