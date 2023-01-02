@@ -60,7 +60,11 @@ export default class AzgaarReaderData {
 			let y = cell.p[1] / SIZE.y * 180 - 90;
 			x = number2Precition(x);
 			y = number2Precition(y);
+      
+      if (180 < Math.abs(x) || 0 > Math.abs(x)) throw new Error(`el valor de x (${x}) es invalido`);
+      if (90 < Math.abs(y) || 0 > Math.abs(y)) throw new Error(`el valor de y (${y}) es invalido`);
 			out.push({ id: cell.i, x, y })
+
 		})
 		return out;
 	}
