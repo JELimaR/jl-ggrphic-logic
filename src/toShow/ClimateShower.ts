@@ -48,6 +48,22 @@ export default class ClimateShower extends Shower {
     return this.d.saveDrawFile(`${this.a}precipMedia`);
   }
 
+  drawForest(pz?: IAPanzoom): string {
+    this.d.clear(pz);
+    this.d.drawBackground()
+    this.d.drawCellContainer(this.w.diagram, JCellToDrawEntryFunctions.land())
+    this.d.drawCellContainer(this.w.diagram, (c: JCell) => {
+      let color = '#228B22';
+      if (!c.info.isForest) color += '00'
+      return {
+        fillColor: color,
+        strokeColor: color
+      }
+    })
+    this.d.drawMeridianAndParallels();
+    return this.d.saveDrawFile(`${this.a}forest`);
+  }
+
   drawTempMonth(month: number, pz?: IAPanzoom): string {
     this.d.clear(pz);
     month = inRange(month, 1, 12);

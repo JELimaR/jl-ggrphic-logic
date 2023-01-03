@@ -3,6 +3,7 @@ import JCell from "../JCell";
 import JCellHeight, {IJCellHeightInfo, TypeCellheight} from './JCellHeight';
 import JCellClimate, {IJCellClimateInfo, TKoppenSubType} from './JCellClimate';
 import JCellAGR, { IJCellAGRInfo } from "./JCellAGR";
+import { inRange } from "../../Math/basicMathFunctions";
 
 export default class JCellInformation {
 	_cell: JCell
@@ -24,7 +25,7 @@ export default class JCellInformation {
 	 * height
 	 */
 	setHeightInfo(h: IJCellHeightInfo): void { this._height = new JCellHeight(this._cell, h);	}
-	getHeightInfo(): IJCellHeightInfo | undefined { return this._height!.getInterface(); }	
+	getHeightInfo(): IJCellHeightInfo | undefined { return this.cellHeight.getInterface(); }	
 	/*private*/ get cellHeight(): JCellHeight {
     if (!this._height) throw new Error(`no se ha generado cellHeigth`)
 		return this._height;
@@ -53,6 +54,23 @@ export default class JCellInformation {
 
 	get tempMonthArr(): number[] { return this.cellClimate.tempMonth }
   get koppenSubType(): TKoppenSubType | 'O' { return this.cellClimate.koppenSubType() }
+  get isPermafrost(): boolean { return this.cellClimate.tempMonthMax < -2 }
+  get isForest(): boolean {
+    if (!this.isLand)
+      return false;
+    let Rmin = 8;
+    let Rmed = 0;
+    for (let i = 0; i <12; i++) {
+      const precip = this.cellClimate.precipMonth[i];
+      const evapParam = inRange(12 * precip / this.cellClimate.pumbral, 0, 1);
+      let ri = (precip / Math.max(...JCellClimate.maxMonthlyPrecip)) ** (0.3);
+      ri = 1.3 * evapParam * inRange(ri, 0, 1);
+
+      Rmed += ri/12;
+      Rmin = Rmin > ri ? ri : Rmin;
+    }
+    return Rmin > 0.42 && Rmed >= 0.58;
+  }
 	// get tempMedia(): number { 
 	// 	let out: number = 0;
 	// 	this._temp!.tempMonth.forEach((t: number) => out += t)

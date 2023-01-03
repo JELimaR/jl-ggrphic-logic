@@ -75,3 +75,7 @@ export const generateShape = (center: Point, rad: number, m: number): Point[] =>
 export const number2Precition = (n: number): number => {
 	return Math.round(n * PRECITION) / PRECITION;
 }
+
+export const getMedValue = (arr: number[]): number => {
+  return arr.reduce((prev: number, curr: number) => prev+curr)/arr.length;
+}
