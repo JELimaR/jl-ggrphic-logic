@@ -8,7 +8,7 @@ import JVertexFlux from "../../BuildingModel/Voronoi/VertexInformation/JVertexFl
 import InformationFilesManager from "../../DataFileLoadAndSave/InformationFilesManager";
 import MapGenerator from "../MapGenerator";
 import { IAGRData } from "./AGRAuxFunctions";
-import { fluxParam, rainParam, tempMedParam, tempVarParam } from "./AGRParamsCalc";
+import { fluxParam, rainParam } from "./WaterParamsCalc";
 import { isForest, getCulInfoArr, getGanInfo } from './AGRAuxFunctions';
 
 export default class AGRMapGenerator extends MapGenerator<void> {
@@ -74,16 +74,12 @@ export default class AGRMapGenerator extends MapGenerator<void> {
         getArrayOfN(12, 0).forEach((_, i: number) => {
           const rp = rainParam(c, i + 1);
           const fp = fluxParam(c, i + 1, this.diagram);
-          // const tmp = tempMedParam(c, i + 1);
-          // const tvp = tempVarParam(c, i + 1);
   
           const wp = (0.5 * fp + 0.5 * rp) / MAXwp;
   
           agrData.waterCategoryArr.push(20 * inDiscreteClasses(wp, 20));
           agrData.rainFallCategoryArr.push(20 * inDiscreteClasses(rp, 20));
           agrData.medRainFallCategory += rp / 12;
-          // agrData.tempMedCategoryArr.push(12 * inDiscreteClasses(tmp, 12));
-          // agrData.tempVarCategoryArr.push(3 * inDiscreteClasses(tvp, 3));
         })
         agrData.medRainFallCategory = 20 * inDiscreteClasses(agrData.medRainFallCategory, 20)
         

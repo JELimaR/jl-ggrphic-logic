@@ -138,7 +138,7 @@ export const estadisticasClimateAndRes = (): void => {
 
       + '\t' + Math.round(cc.precipSemCalido)  + '\t' +  Math.round(cc.precipSemFrio)
       + '\t' + Math.round(cc.annualPrecip)
-      + '\t' + (ca.isCul ? 1 : 0) + '\t' + (ca.isGan ? 1 : 0) + '\t' + (ca.isForest ? 1 : 0)
+      + '\t' + (ca.isCul ? 1 : 0) + '\t' + (ca.isGan ? 1 : 0) + '\t' + (cell.info.isForest ? 1 : 0)
       + '\t' + Math.round(cell.info.heightInMeters)
       + '\t' + Math.round(cell.areaSimple*10)/10
       + '\t' + Math.round(Math.abs(cell.site.point.y))

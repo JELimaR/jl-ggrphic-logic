@@ -3,7 +3,7 @@ import JCell from "./BuildingModel/Voronoi/JCell";
 import CellCost from "./GACServer/GACCultures/CellCost";
 import MapController from "./MapController";
 import chroma from 'chroma-js';
-import { inDiscreteClasses, getArrayOfN, heightParamToMeters, inRange } from './BuildingModel/Math/basicMathFunctions';
+import { inDiscreteClasses, getArrayOfN, heightParamToMeters, inRange, getMedValue } from './BuildingModel/Math/basicMathFunctions';
 import JVertex from './BuildingModel/Voronoi/JVertex';
 import IslandMap from './BuildingModel/MapContainerElements/Natural/IslandMap';
 import Point, { IPoint } from './BuildingModel/Math/Point';
@@ -26,227 +26,100 @@ import InformationFilesManager from "./DataFileLoadAndSave/InformationFilesManag
 import { createNoise2D, NoiseFunction2D } from 'simplex-noise';
 import RandomNumberGenerator from "./BuildingModel/Math/RandomNumberGenerator";
 import NoiseMapValuesGenerator, { INoiseFunctionEntry } from "./GACServer/NoiseMapValuesGenerator";
+import { culMonthlyValue } from './GACServer/GACNaturalRes/SeasonalCulFunctions'
+import { fertFunc } from "./GACServer/SomeNoiseFunctionEntries";
+import { fluxParam, rainParam } from "./GACServer/GACNaturalRes/WaterParamsCalc";
+import NaturalResMapGenerator from "./GACServer/GACNaturalRes/NaturalResMapGenerator";
 
 
 const mc = MapController.instance;
 
 let area: number = 0;
+let sumValue = 0;
 let landArea = 0;
 const colorScale: chroma.Scale = chroma.scale('Spectral').domain([1, 0]);
 const colorScaleBW: chroma.Scale = chroma.scale();
-
-//
-
-const fertEntry: INoiseFunctionEntry = {
-  fundamental: 6,
-  harmonics: 6,
-  noiseExponent: 1,
-
-  genExponent: 0.22,
-
-  hExponent: 0.0,
-  hMin: 0.2,
-
-  fluxExponent: 0,
-  fluxNegative: false,
-}
-
-const seaFishingEntry: INoiseFunctionEntry = {
-  fundamental: 6,
-  harmonics: 6,
-  noiseExponent: 1,
-
-  genExponent: 0.22,
-
-  hExponent: 0.0,
-  hMin: 0.0,
-
-  fluxExponent: 0,
-  fluxNegative: false,
-}
-
-const matCons: INoiseFunctionEntry = {
-  fundamental: 3,
-  harmonics: 6,
-  noiseExponent: 1.2,
-
-  genExponent: 0.86,
-
-  hExponent: 0.37,
-  hMin: 0.33,
-
-  fluxExponent: 0,
-  fluxNegative: false,
-}
-
-const matLux1: INoiseFunctionEntry = {
-  fundamental: 7,
-  harmonics: 3,
-  noiseExponent: 1.5,
-
-  genExponent: 2,
-
-  hExponent: 0.1,
-  hMin: 0.71,
-
-  fluxExponent: 0,
-  fluxNegative: false,
-}
-
-const matLux2: INoiseFunctionEntry = {
-  fundamental: 6,
-  harmonics: 6,
-  noiseExponent: 2,
-
-  genExponent: 1.4,
-
-  hExponent: 0.1,
-  hMin: 0.4,
-
-  fluxExponent: 0.1,
-  fluxNegative: false,
-}
-
-const auxEntry: INoiseFunctionEntry = {
-  fundamental: 6,
-  harmonics: 6,
-  noiseExponent: 2,
-
-  genExponent: 1.4,
-
-  hExponent: 0.1,
-  hMin: 0.4,
-
-  fluxExponent: 0.1,
-  fluxNegative: false,
-}
-
-const entry = seaFishingEntry;
 
 export default (): void => {
   const nm: NaturalMap = mc.naturalMap;
   nm.diagram.forEachCell(c => landArea += c.info.heightType == 'land' ? c.area : 0)
   const rivers = nm.rivers;
+  const nrg = new NaturalResMapGenerator(nm.diagram);
 
-  nm.generateAGRInfo();
+  const datos = nrg.seasonalCulValues();
+
+  // nm.generateAGRInfo();
 
   const cdm = mc.showerManager.st.d
 
-  const p: IPoint = { x: -137, y: -8 }
+  const p: IPoint = { x: 92, y: -8 }
   const cell = nm.diagram.getCellFromPoint(p);
   //-------------------------------------------------------------------
-  // is mine
-  const nvg = new NoiseMapValuesGenerator(RandomNumberGenerator.makeRandomInt(16));
-  const genFunc = nvg.generateNewFunction(entry);
-  //-------------------------------------------------------------------
   area = 0
-  let maxValue = 0;
-  let minValue = 0;
-  let sumValue = 0;
-  cdm.clear({ zoom: 0, center: p })
-  cdm.drawCellContainer(nm.diagram, (c: JCell) => {
-    let color: string;
-    // if (c.info.isLand) {
-    const info = c.info;
-    let val = 0;
-    // if (hinfo.heightInMeters > 1108) {
-    val = genFunc(c);
-    // const narr = nm.diagram.getCellNeighbours(c);
-    // narr.forEach(n => val += genFunc(n)/narr.length);
-    // val = 0.6 * genFunc(c) + 0.4 * val;
-
-
-    if (val > maxValue) maxValue = val;
-    if (val < minValue) minValue = val;
-    sumValue += val;
-    // val = inDiscreteClasses(val, 20);
-    // area += c.area;
-    // }
-    // area += val !== 0 ? c.area : 0;
-    color = colorScaleBW(val).alpha(1.0).hex();
-    // } else
-    //   color = '#F2F9F0';
-    return {
-      fillColor: color,
-      strokeColor: color,
-    }
-  })
-  cdm.drawMeridianAndParallels();
-  console.log(cdm.saveDrawFile(`minerals`));
-  console.log(cdm.saveDrawFile(`minerals__f${entry.fundamental}_h${entry.harmonics}_ne${entry.noiseExponent}_ge${entry.genExponent}_he${entry.hExponent}_hm${entry.hMin}_fe${entry.fluxExponent}_fn${entry.fluxNegative ? 'T' : 'F'}`));
-  console.log('maxValue', maxValue)
-  console.log('sumValue', sumValue, (sumValue / nm.diagram.cells.size).toFixed(4))
-  console.log('minValue', minValue)
-  // console.log('area', area.toFixed(2), 'km2')
-  //-------------------------------------------------------------------
-  // const otherFunc = mvg.other();
-  // area = 0
-  // cdm.clear({ zoom: 0, center: p })
-  // cdm.drawCellContainer(nm.diagram, (c: JCell) => {
-  //   let color: string;
-  //   // if (c.info.isLand) {
-  //     const hinfo = c.info.cellHeight;
-  //     let val = 0;
-  //     // if (hinfo.heightInMeters > 1108) {
-  //       val = 1 + 19 * otherFunc(c);
-  //       val = inDiscreteClasses(val/20, 20) * 20;
-  //       area += c.area;
-  //     // }
-  //     // area += val !== 0 ? c.area : 0;
-  //     color = colorScale(val).alpha(1.0).hex();
-  //   // } else
-  //   //   color = '#F2F9F0';
-  //   return {
-  //     fillColor: color,
-  //     strokeColor: color,
-  //   }
-  // })
-  // cdm.drawMeridianAndParallels();
-  // console.log(cdm.saveDrawFile(`otherFunc`));
-  // console.log('rel Area', (100 * area / landArea).toFixed(2), '%')
-  // //-------------------------------------------------------------------
-
-  // estadisticasClimateAndRes();
-  area = 0;
-  let culArea = 0;
-  let ganArea = 0;
-  let forArea = 0;
+  sumValue = 0;
   cdm.clear({ zoom: 0, center: p })
   cdm.drawCellContainer(nm.diagram, (c: JCell) => {
     let color: string;
     if (c.info.isLand) {
-      const ainfo = c.info.cellAGR;
+      const info = c.info;
       let val = 0;
-      if (ainfo.isCul) {
-        val += 0.33;
-        culArea += c.area;
-      }
-      if (ainfo.isGan) {
-        val += 0.51;
-        ganArea += c.area;
-      }
-      area += val != 0 ? c.area : 0;
-      color = colorScale(val).alpha(1.0).hex();
-      if (ainfo.isForest) {
-        color = '#121719';
-        forArea += c.area;
-      }
+      
+      val = Math.max(...datos[c.id]['cer']!)
+
+      area += val !== 0 ? c.area : 0;
+      sumValue += val * c.area;
+      color = colorScaleBW(val).alpha(1.0).hex();
     } else
-      color = '#F2F9F0';
+      color = colorScale(0.1).hex();
     return {
       fillColor: color,
       strokeColor: color,
     }
   })
   cdm.drawMeridianAndParallels();
-  console.log(cdm.saveDrawFile(`isAgr`));
-  console.log('rel Area', (100 * area / landArea).toFixed(2), '%')
-  console.log('cul area', culArea.toFixed(0), 'km2\t', (100 * culArea / landArea).toFixed(2), '%')
-  console.log('gan Area', ganArea.toFixed(0), 'km2\t', (100 * ganArea / landArea).toFixed(2), '%')
-  console.log('for Area', forArea.toFixed(0), 'km2\t', (100 * forArea / landArea).toFixed(2), '%')
+  console.log(cdm.saveDrawFile(`test45`));
+  console.log('area', mostrarNum(area), 'km2 -', mostrarNum(100*area/landArea), '%')
+  console.log(mostrarNum(sumValue))
+  //-------------------------------------------------------------------
+  area = 0
+  sumValue = 0;
+  cdm.clear({ zoom: 0, center: p })
+  cdm.drawCellContainer(nm.diagram, (c: JCell) => {
+    let color: string;
+    if (c.info.isLand) {
+      let val = 0;
+      
+      val = Math.max(...datos[c.id]['cerw']!)
+
+      area += val !== 0 ? c.area : 0;
+      sumValue += val * c.area;
+      color = colorScaleBW(val).alpha(1.0).hex();
+    } else
+      color = colorScale(0.1).hex();
+    return {
+      fillColor: color,
+      strokeColor: color,
+    }
+  })
+  cdm.drawMeridianAndParallels();
+  console.log(cdm.saveDrawFile(`test46`));
+  console.log('area', mostrarNum(area), 'km2 -', mostrarNum(100*area/landArea), '%')
+  console.log(mostrarNum(sumValue))
+
+  console.log('datos:')
+  console.log('cer', datos[cell.id].cer)
+  console.log('cerw', datos[cell.id].cerw)
+  //-------------------------------------------------------------------
+
+  // estadisticasClimateAndRes();
+  // console.log(mc.showerManager.sc.drawForest())
 }
 
 const drawCellOnly = (c: JCell, cdm: CanvasDrawingMap) => {
   const color = '#010101'
   cdm.drawCellContainer(createICellContainer([c]), colors({ fillColor: color, strokeColor: color }))
+}
+
+const mostrarNum = (n: number, d: number = 2): string => {
+  return n.toLocaleString('de-DE', {maximumFractionDigits: d, minimumFractionDigits: d})
 }

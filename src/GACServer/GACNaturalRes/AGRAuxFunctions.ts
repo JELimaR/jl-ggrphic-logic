@@ -15,8 +15,8 @@ export interface IAGRData {
 export const isForest = (data: IAGRData): boolean => {
   const minR = Math.min(...data.rainFallCategoryArr);
   const medR = data.medRainFallCategory
-  const medT = data.tempMedCategoryArr.reduce((p: number, c: number) => p + c) / 12;
-  return minR > 8 && medR >= 11 && medT > 5;
+  // const medT = data.tempMedCategoryArr.reduce((p: number, c: number) => p + c) / 12;
+  return minR > 8 && medR >= 11;
 }
 
 export const woodLevel = (data: IAGRData): number => {// ?

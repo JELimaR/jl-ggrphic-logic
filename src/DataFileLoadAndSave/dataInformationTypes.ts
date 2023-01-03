@@ -21,6 +21,10 @@ export const DATA_INFORMATION: TypeInformationObject = {
 		file: 'agr',
 		subFolder: ['CellsInfo']
 	},
+  cellNatRes: {
+		file: 'natRes',
+		subFolder: ['CellsInfo']
+	},
   //
 	vertexHeight: {
 		file: 'height',

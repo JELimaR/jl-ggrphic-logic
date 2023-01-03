@@ -28,6 +28,7 @@ const listAzgaarFolders: IInitStateOption[] = [
   { folder: 'Zia20', area: 8100 },          // 1
   { folder: 'Vilesland40', area: 4100 },    // 2
   { folder: 'Maletia80', area: 2100 },      // 3
+  { folder: 'World10', area: 12100 },      // 4 es na cagada
 ];
 
 const selection: IInitStateOption = listAzgaarFolders[0];
