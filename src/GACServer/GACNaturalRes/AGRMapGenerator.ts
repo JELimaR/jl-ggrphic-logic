@@ -8,7 +8,7 @@ import JVertexFlux from "../../BuildingModel/Voronoi/VertexInformation/JVertexFl
 import InformationFilesManager from "../../DataFileLoadAndSave/InformationFilesManager";
 import MapGenerator from "../MapGenerator";
 import { IAGRData } from "./AGRAuxFunctions";
-import { fluxParam, rainParam } from "./WaterParamsCalc";
+import { fluxParam, rainParam } from "./waterParamsCalc";
 import { isForest, getCulInfoArr, getGanInfo } from './AGRAuxFunctions';
 
 export default class AGRMapGenerator extends MapGenerator<void> {

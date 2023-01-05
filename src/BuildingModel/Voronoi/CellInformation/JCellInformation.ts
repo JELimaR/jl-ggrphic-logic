@@ -4,12 +4,14 @@ import JCellHeight, {IJCellHeightInfo, TypeCellheight} from './JCellHeight';
 import JCellClimate, {IJCellClimateInfo, TKoppenSubType} from './JCellClimate';
 import JCellAGR, { IJCellAGRInfo } from "./JCellAGR";
 import { inRange } from "../../Math/basicMathFunctions";
+import JCellNaturalRes, { IJCellNaturalResInfo } from "./JCellNaturalRes";
 
 export default class JCellInformation {
-	_cell: JCell
-	_height: JCellHeight | undefined;
-	_climate: JCellClimate | undefined;
-  _agr: JCellAGR | undefined;
+	private _cell: JCell;
+	private _height: JCellHeight | undefined;
+	private _climate: JCellClimate | undefined;
+  private _agr: JCellAGR | undefined; // borrar
+  private _natRes: JCellNaturalRes | undefined;
 	// _temp: JCellTemp | undefined;
 
 	private _mark = false;
@@ -25,7 +27,7 @@ export default class JCellInformation {
 	 * height
 	 */
 	setHeightInfo(h: IJCellHeightInfo): void { this._height = new JCellHeight(this._cell, h);	}
-	getHeightInfo(): IJCellHeightInfo | undefined { return this.cellHeight.getInterface(); }	
+	getHeightInfo(): IJCellHeightInfo { return this.cellHeight.getInterface(); }	
 	/*private*/ get cellHeight(): JCellHeight {
     if (!this._height) throw new Error(`no se ha generado cellHeigth`)
 		return this._height;
@@ -46,7 +48,7 @@ export default class JCellInformation {
 	 * climate
 	 */
 	setClimatetInfo(c: IJCellClimateInfo): void { this._climate = new JCellClimate(this._cell, c);	}
-	getClimateInfo(): IJCellClimateInfo | undefined { return this._climate!.getInterface(); }	
+	getClimateInfo(): IJCellClimateInfo { return this.cellClimate.getInterface(); }	
 	get cellClimate(): JCellClimate {
 		if (!this._climate) throw new Error(`no se ha generado cellClimate`)
 		return this._climate;
@@ -76,6 +78,16 @@ export default class JCellInformation {
 	// 	this._temp!.tempMonth.forEach((t: number) => out += t)
 	// 	return out/12;
 	// }
+
+  /*
+	 * NatRes
+	 */
+	setNatRestInfo(nr: IJCellNaturalResInfo): void { this._natRes = new JCellNaturalRes(this._cell, nr); }
+	getNatRestInfo(): IJCellNaturalResInfo { return this.cellNaturalRes.getInterface(); }	
+	get cellNaturalRes(): JCellNaturalRes {
+		if (!this._natRes) throw new Error(`no se ha generado cellAGR`)
+		return this._natRes;
+	}
 
   /*
 	 * AGR

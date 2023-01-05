@@ -282,8 +282,8 @@ export default class RiverMapGenerator extends MapGenerator<IRiverMapGeneratorOu
 export const evalIndEdgeNavLevel = (currV: JVertex, prevV: JVertex, month: number, diagram: JDiagram): number => {
   const edge = diagram.getEdgeFromVertices(prevV, currV);
 
-  const difH = heightParamToMeters(currV.info.height) - 
-    heightParamToMeters(prevV.info.height);
+  const difH = Math.abs(heightParamToMeters(currV.info.height) - 
+    heightParamToMeters(prevV.info.height));
   const dist = edge.length;
 
   const desnivel = 0.1*difH/dist; // cm per m

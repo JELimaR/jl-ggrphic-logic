@@ -51,7 +51,7 @@ const minNavCostEval = (cell: JCell): number => {
   return Math.max(...arr) / 3; // ver
 }
 
-export const annualFluxCell = (cell: JCell): number => {
+const annualFluxCell = (cell: JCell): number => {
   if (cell.info.heightType !== 'land') return 0;
   const vasso = mc.naturalMap.diagram.getVerticesAssociated(cell);
   const arr = vasso.map(v => 

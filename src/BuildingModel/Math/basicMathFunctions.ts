@@ -35,6 +35,15 @@ export const inRange = (value: number, minimo: number, maximo: number): number =
 	return out;
 }
 
+// devuelve valor entre 0 y 1, centrando en el valor medio, con curva cuadratica
+export const quadCenterInRange = (val: number, valMin: number, valMax: number) => {
+  if (val < valMin) return 0;
+  if (val > valMax) return 0;
+
+  const valLinealizado = (val-valMin)/(valMax-valMin); // entre 0 y 1
+  return (-1 * (valLinealizado - 0.5) ** 2 + 0.25) / 0.25
+}
+
 export const inDiscreteClasses = (value: number, classesCant: number, pow: number = 1): number => {
 
   classesCant = Math.round(classesCant);
@@ -51,6 +60,10 @@ export const heightParamToMeters = (h: number): number => {
   } else {
   return 6121.258 * ((h - 0.2)/0.8) ** 1.8;
   }
+}
+
+export const prnNm = (n: number, d: number = 2): string => {
+  return n.toLocaleString('de-DE', {maximumFractionDigits: d, minimumFractionDigits: d})
 }
 
 export const generateShape = (center: Point, rad: number, m: number): Point[] => {
