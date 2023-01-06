@@ -2,7 +2,7 @@ import { getMedValue } from "../../BuildingModel/Math/basicMathFunctions";
 import JCell from "../../BuildingModel/Voronoi/JCell";
 import JDiagram from "../../BuildingModel/Voronoi/JDiagram";
 import NoiseMapValuesGenerator from "../NoiseMapValuesGenerator";
-import { waterParamArr } from "./waterParamsCalc";
+import { fishLevelParam, waterParamArr } from "./waterParamsCalc";
 
 const N = 3;
 
@@ -73,7 +73,7 @@ export class JCellISICAParams implements IISICCellParams {
     this._rmed = getMedValue(wps.rp);  // f
     this._seasonal = this.getSeasonalCulMonthCellParams(cell, diag); // s
     this._fluxArr = wps.fp; // w
-    this._nLevel = fishLevelNoiseFunc(cell); // a
+    this._nLevel = fishLevelParam(cell, diag); // a
   }
 
   get tabsmin(): number {
@@ -163,3 +163,4 @@ export class JCellISICAParams implements IISICCellParams {
     return out;
   }
 }
+

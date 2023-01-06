@@ -10,13 +10,29 @@ import NoiseMapValuesGenerator from "../NoiseMapValuesGenerator";
 
 interface IWaterParamOut { wp: number[], rp: number[], fp: number[] }
 
+/*
+let MAXwp = 1;
+export const preCalcMaxWaterParam = (diag: JDiagram): number => {
+  let out = 0;
+  diag.forEachCell((c: JCell) => {
+    if (c.info.isLand) {
+      let cellMaxValue = 0;
+      const paramArr = waterParamArr(c, diag).wp;
+      cellMaxValue = Math.max(...paramArr);
+      if (cellMaxValue > out) out = cellMaxValue;
+    }
+  })
+  return out;
+}
+*/
+
 export const waterParamArr = (c: JCell, diagram: JDiagram): IWaterParamOut => {
   let out: IWaterParamOut = { wp: [], rp: [], fp: [] };
   for (let m = 1; m <= 12; m++) {
     const rp = rainParam(c, m);
-    const fp = fluxParam2(c, m, diagram);
+    const fp = fluxParam(c, m, diagram);
 
-    const wp = (0.5 * fp + 0.5 * rp);
+    const wp = inRange(0.6 * fp + 0.5 * rp, 0, 1);
 
     out.wp.push(wp);
     out.rp.push(rp);
@@ -25,27 +41,16 @@ export const waterParamArr = (c: JCell, diagram: JDiagram): IWaterParamOut => {
   return out;
 }
 
-export const rainParam = (cell: JCell, month: number): number => {
+const rainParam = (cell: JCell, month: number): number => {
   if (!cell.info.isLand)
     return 0;
   const precip = cell.info.cellClimate.precipMonth[month - 1];
   const evapParam = inRange(12 * precip / cell.info.cellClimate.pumbral, 0, 1);
-  let out = (precip / Math.max(...JCellClimate.maxMonthlyPrecip)) ** (0.28);
+  let out = (precip / Math.max(...JCellClimate.maxMonthlyPrecip)) ** (0.3);
   return 1.3 * evapParam * inRange(out, 0, 1);
 }
 
-export const fluxParam = (cell: JCell, month: number, diagram: JDiagram): number => {
-  const vasso = diagram.getVerticesAssociated(cell);
-  const maxF = Math.max(...JVertexFlux.monthMaxFlux);
-  const arr = vasso.map(v => {
-    const flux = v.info.vertexFlux.monthFlux[month - 1];
-    return (flux / maxF) ** 0.3;
-  });
-  let out = (arr.reduce((c: number, p: number) => c + p) / vasso.length) ** (0.28);
-  return inRange(out, 0, 1);
-}
-
-export const fluxParam2 = (cell: JCell, month: number, diagram: JDiagram): number => {
+const fluxParam = (cell: JCell, month: number, diagram: JDiagram): number => {
   let out = 0;
 
   let perim = 0;
@@ -54,13 +59,13 @@ export const fluxParam2 = (cell: JCell, month: number, diagram: JDiagram): numbe
     perim += e.length;
     let fluxEdge = 0;
     e.vertices.forEach((v: JVertex) => {
-      fluxEdge += v.info.vertexFlux.monthFlux[month - 1]/2;
+      fluxEdge += v.info.vertexFlux.monthFlux[month - 1] / 2;
     })
 
-    out += ((fluxEdge/maxF) ** 0.99) * e.length;
+    out += ((fluxEdge / maxF) ** 0.3) * e.length;
   });
   out /= perim;
-  return inRange(out ** 0.28, 0, 1);
+  return inRange(out ** 0.3, 0, 1);
 }
 
 export const fishLevelParam = (cell: JCell, diagram: JDiagram): number => {

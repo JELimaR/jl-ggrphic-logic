@@ -26,7 +26,7 @@ import InformationFilesManager from "./DataFileLoadAndSave/InformationFilesManag
 import { createNoise2D, NoiseFunction2D } from 'simplex-noise';
 import RandomNumberGenerator from "./BuildingModel/Math/RandomNumberGenerator";
 import NoiseMapValuesGenerator, { INoiseFunctionEntry } from "./GACServer/NoiseMapValuesGenerator";
-import { fluxParam, fishLevelParam, rainParam, fluxParam2, waterParamArr } from "./GACServer/GACNaturalRes/waterParamsCalc";
+import { waterParamArr } from "./GACServer/GACNaturalRes/waterParamsCalc";
 import NaturalResMapGenerator from "./GACServer/GACNaturalRes/NaturalResMapGenerator";
 import { SEASONALCULFAMLIST, TSeasonalCulFamily } from "./BuildingModel/NaturalRes/SeasonalCul";
 import { PERENNIALCULFAMLIST, TPerennialCulFamily } from "./BuildingModel/NaturalRes/PerennialCul";
@@ -51,8 +51,7 @@ export default (): void => {
   const rivers = nm.rivers;
 
   //-------------------------------------------------------------------------------
-  const nrg = new NaturalResMapGenerator(nm.diagram);
-  const natresData = nrg.generateData();
+  const natresData = nm.generateNaturalRes();
 
   // console.time('datos')
   // const datosSeasonal = nrg.seasonalCulValues();
@@ -170,10 +169,10 @@ export default (): void => {
     }
   }
   //-------------------------------------------------------------------
-  const fp2 = (c: JCell) => {
+  const fp = (c: JCell) => {
     return waterParamArr(c, nm.diagram).fp.reduce((pr: number,cr: number) => pr+cr)/12;
   }
-  drawSomething(cdm, 'fluxParam2', fp2, nm.diagram);
+  drawSomething(cdm, 'fluxParam', fp, nm.diagram);
 
   const rp = (c: JCell) => {
     return waterParamArr(c, nm.diagram).rp.reduce((pr: number,cr: number) => pr+cr)/12;

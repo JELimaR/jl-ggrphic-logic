@@ -46,11 +46,12 @@ export default class NaturalMap {
 		return this._lakes;
 	}
 
-  generateAGRInfo() {
+  generateNaturalRes() {
     if (this._rivers.size === 0) {
       this.setFluxElements();
     }
-    this._creator.generateAGRMap(this._diagram)
+    let dataOut = this._creator.generateNaturalRes(this._diagram);
+    return dataOut; // borrar
   }
 
 	private setFluxElements() {

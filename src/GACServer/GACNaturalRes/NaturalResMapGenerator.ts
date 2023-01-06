@@ -7,7 +7,6 @@ import JDiagram from "../../BuildingModel/Voronoi/JDiagram";
 import JVertexFlux from "../../BuildingModel/Voronoi/VertexInformation/JVertexFlux";
 import InformationFilesManager from "../../DataFileLoadAndSave/InformationFilesManager";
 import MapGenerator from "../MapGenerator";
-import { fluxParam, rainParam } from "./waterParamsCalc";
 import { SEASONALCULFAMLIST, TSeasonalCulFamily, TSeasonalCulFamList } from "../../BuildingModel/NaturalRes/SeasonalCul";
 import { PERENNIALCULFAMLIST, TPerennialCulFamily, TPerennialCulFamList } from "../../BuildingModel/NaturalRes/PerennialCul";
 import { FORECULFAMLIST, TForeCulFamily, TForeCulFamList } from "../../BuildingModel/NaturalRes/ForeCul";
@@ -49,11 +48,9 @@ export default class NaturalResMapGenerator extends MapGenerator<void> {
 
     return infoArr;
   }
-  generateData(): IJCellNaturalResInfo[] {
+  private generateData(): IJCellNaturalResInfo[] {
     console.log('calc seccion A y B de ISIC')
     console.time('seccion A y B de ISIC')
-    // let MAXwp = this.preCalcMaxWaterParam();
-    // console.log('MAX', MAXwp)
 
     const out: IJCellNaturalResInfo[] = [];
 
@@ -105,24 +102,6 @@ export default class NaturalResMapGenerator extends MapGenerator<void> {
 
     return out;
   }
-
-  // private preCalcMaxWaterParam(): number {
-  //   let out = 0;
-  //   this.diagram.forEachCell((c: JCell) => {
-  //     if (c.info.isLand) {
-  //       let cellMaxValue = 0;
-  //       for (let m = 1; m <= 12; m++) {
-  //         const rp = rainParam(c, m);
-  //         const fp = fluxParam(c, m, this.diagram);
-  //         const wp = 0.5 * fp + 0.5 * rp;
-  //         cellMaxValue = cellMaxValue < wp ? wp : cellMaxValue
-  //       }
-  //       if (cellMaxValue > out) out = cellMaxValue;
-  //     }
-  //   })
-  //   return out;
-  // }
-
 }
 
 const getEmptySeasonalCulList = (): TSeasonalCulFamList<number[]> => {

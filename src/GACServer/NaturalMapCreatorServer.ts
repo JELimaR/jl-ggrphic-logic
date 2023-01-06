@@ -7,12 +7,12 @@ import GridCreator from './GACGrid/GridCreator';
 import ClimateMapGenerator from './GACClimate/ClimateMapGenerator';
 import HeightMapGenerator from './GACRelief/HeightMapGenerator';
 import VoronoiDiagramCreator from './GACVoronoi/VoronoiDiagramCreator';
-import { IRiverMapGeneratorOut } from '../BuildingModel/INaturalMapCreator';
+import INaturalMapCreator, { IRiverMapGeneratorOut } from '../BuildingModel/INaturalMapCreator';
 import LakeMapGenerator from './GACRelief/LakeMapGenerator';
 import LakeMap from '../BuildingModel/MapContainerElements/Natural/LakeMap';
-import AGRMapGenerator from './GACNaturalRes/AGRMapGenerator';
+import NaturalResMapGenerator from './GACNaturalRes/NaturalResMapGenerator';
 
-export default class NaturalMapCreatorServer { // debe tener su diagram?
+export default class NaturalMapCreatorServer implements INaturalMapCreator { // debe tener su diagram?
 	
 	generateVoronoiDiagramInfo(AREA: number): JDiagram {
 		console.time('Generate Natural World')
@@ -71,8 +71,8 @@ export default class NaturalMapCreatorServer { // debe tener su diagram?
 		const lmg: LakeMapGenerator = new LakeMapGenerator(diag);
 		return lmg.generate()
 	}
-  generateAGRMap(diagram: JDiagram) {
-    const amg = new AGRMapGenerator(diagram);
-    amg.generate();
+  generateNaturalRes(diagram: JDiagram) {
+    const nrg = new NaturalResMapGenerator(diagram);
+    return nrg.generate();
   }
 }
