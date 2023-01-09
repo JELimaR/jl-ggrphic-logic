@@ -8,7 +8,7 @@ import JVertexFlux from "../../BuildingModel/Voronoi/VertexInformation/JVertexFl
 import InformationFilesManager from "../../DataFileLoadAndSave/InformationFilesManager";
 import MapGenerator from "../MapGenerator";
 import { SEASONALCULFAMLIST, TSeasonalCulFamily, TSeasonalCulFamList } from "../../BuildingModel/NaturalRes/SeasonalCul";
-import { PERENNIALCULFAMLIST, TPerennialCulFamily, TPerennialCulFamList } from "../../BuildingModel/NaturalRes/PerennialCul";
+import { PERENNIALCULFAMLIST, TPerennialCulFamily, TPerennialCulFamList } from '../../BuildingModel/NaturalRes/PerennialCul';
 import { FORECULFAMLIST, TForeCulFamily, TForeCulFamList } from "../../BuildingModel/NaturalRes/ForeCul";
 import { GANFAMLIST, TGanFamily, TGanFamList } from "../../BuildingModel/NaturalRes/Gan";
 import JCellNaturalRes, { IJCellNaturalResInfo } from "../../BuildingModel/Voronoi/CellInformation/JCellNaturalRes";
@@ -129,6 +129,7 @@ const getEmptyPerennialCulList = (): TPerennialCulFamList<number> => {
     beb: 0,
     esp: 0,
     medfarm: 0,
+    wat: 0,
   }
 }
 
@@ -160,6 +161,5 @@ const getEmptyAquaList = (): TAquaFamList<number> => {
     rivf: 0,
     mara: 0,
     riva: 0,
-    wat: 0,
   }
 }

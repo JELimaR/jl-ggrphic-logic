@@ -31,7 +31,7 @@ import NaturalResMapGenerator from "./GACServer/GACNaturalRes/NaturalResMapGener
 import { SEASONALCULFAMLIST, TSeasonalCulFamily } from "./BuildingModel/NaturalRes/SeasonalCul";
 import { PERENNIALCULFAMLIST, TPerennialCulFamily } from "./BuildingModel/NaturalRes/PerennialCul";
 import { FORECULFAMLIST, TForeCulFamily } from "./BuildingModel/NaturalRes/ForeCul";
-import { GANFAMLIST, TGanFamily, TGanFamList } from "./BuildingModel/NaturalRes/Gan";
+import { GANFAMLIST, TGanFamily } from "./BuildingModel/NaturalRes/Gan";
 import JDiagram from "./BuildingModel/Voronoi/JDiagram";
 import { AQUAFAMLIST, TAquaFamily } from "./BuildingModel/NaturalRes/Aqua";
 
@@ -49,18 +49,14 @@ export default (): void => {
   const cdm = mc.showerManager.st.d
   nm.diagram.forEachCell(c => landArea += c.info.heightType == 'land' ? c.area : 0)
   const rivers = nm.rivers;
+  console.log(rivers.size)
+
+  mc.showerManager.sc.drawForest()
+  mc.showerManager.sc.drawKoppen()
+  mc.showerManager.sc.drawLifeZones()
 
   //-------------------------------------------------------------------------------
   const natresData = nm.generateNaturalRes();
-
-  // console.time('datos')
-  // const datosSeasonal = nrg.seasonalCulValues();
-  // const datosPerennial = nrg.perenniallCulValues();
-  // const datosFore = nrg.foreCulValues();
-  // const datosGan = nrg.ganValues();
-  // console.timeEnd('datos')
-
-  // nm.generateAGRInfo();
 
 
   const p: IPoint = { x: 89, y: 6 }
@@ -79,7 +75,7 @@ export default (): void => {
       // sfam == 'azu' ||
       // sfam == 'tab' ||
       // sfam == 'fib' ||
-      false
+      12/6 < 0
     ) {
       const x = (c: JCell) => {
         const s = natresData[c.id].isica.seasonalCul;
@@ -102,7 +98,8 @@ export default (): void => {
       // pfam == 'beb' ||
       // pfam == 'esp' ||
       // pfam == 'medfarm' || 
-      false
+      pfam == 'wat' ||
+      12/6 < 0
     ) {
       const x = (c: JCell) => {
         const p = natresData[c.id].isica.perennialcul;
@@ -121,7 +118,7 @@ export default (): void => {
       // ffam == 'wdmed' ||
       // ffam == 'wdesp1' ||
       // ffam == 'wdesp2' ||
-      false
+      12/6 < 0
     ) {
       const x = (c: JCell) => {
         const f = natresData[c.id].isica.fore;
@@ -144,7 +141,7 @@ export default (): void => {
       // gfam == 'cer' ||
       // gfam == 'ins' ||
       // gfam == 'peq' ||
-      false
+      12/6 < 0
     ) {
       const x = (c: JCell) => {
         const g = natresData[c.id].isica.gan;
@@ -162,25 +159,24 @@ export default (): void => {
       // afam == 'marf' ||
       // afam == 'riva' ||
       // afam == 'rivf' ||
-      // afam == 'wat' ||
-      false
+      12/6 < 0
     ) {
       drawSomething(cdm, afam, (c: JCell) => natresData[c.id].isica.aqua[afam], nm.diagram)
     }
   }
   //-------------------------------------------------------------------
   const fp = (c: JCell) => {
-    return waterParamArr(c, nm.diagram).fp.reduce((pr: number,cr: number) => pr+cr)/12;
+    return waterParamArr(c).fp.reduce((pr: number,cr: number) => pr+cr)/12;
   }
   drawSomething(cdm, 'fluxParam', fp, nm.diagram);
 
   const rp = (c: JCell) => {
-    return waterParamArr(c, nm.diagram).rp.reduce((pr: number,cr: number) => pr+cr)/12;
+    return waterParamArr(c).rp.reduce((pr: number,cr: number) => pr+cr)/12;
   }
   drawSomething(cdm, 'rainParam', rp, nm.diagram);
 
   const wp = (c: JCell) => {
-    return waterParamArr(c, nm.diagram).wp.reduce((pr: number,cr: number) => pr+cr)/12;
+    return waterParamArr(c).wp.reduce((pr: number,cr: number) => pr+cr)/12;
   }
   drawSomething(cdm, 'waterParam', wp, nm.diagram);
   //-------------------------------------------------------------------

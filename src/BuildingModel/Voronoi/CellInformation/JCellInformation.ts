@@ -63,16 +63,25 @@ export default class JCellInformation {
     let Rmin = 8;
     let Rmed = 0;
     for (let i = 0; i <12; i++) {
-      const precip = this.cellClimate.precipMonth[i];
-      const evapParam = inRange(12 * precip / this.cellClimate.pumbral, 0, 1);
-      let ri = (precip / Math.max(...JCellClimate.maxMonthlyPrecip)) ** (0.3);
-      ri = 1.3 * evapParam * inRange(ri, 0, 1);
+      // const precip = this.cellClimate.precipMonth[i];
+      // const evapParam = inRange(12 * precip / this.cellClimate.pumbral, 0, 1);
+      // let ri = (precip / Math.max(...JCellClimate.maxMonthlyPrecip)) ** (0.3);
+      // ri = 1.3 * evapParam * inRange(ri, 0, 1);
+			let ri = this.rainParam(i+1)
 
       Rmed += ri/12;
       Rmin = Rmin > ri ? ri : Rmin;
     }
     return Rmin > 0.42 && Rmed >= 0.58;
   }
+	rainParam(month: number) {
+		if (!this.isLand)
+    	return 0;
+		const precip = this.cellClimate.precipMonth[month - 1];
+		const evapParam = inRange(12 * precip / this.cellClimate.pumbral, 0, 1);
+		let out = (precip / Math.max(...JCellClimate.maxMonthlyPrecip)) ** (0.3);
+		return 1.3 * evapParam * inRange(out, 0, 1);
+	}
 	// get tempMedia(): number { 
 	// 	let out: number = 0;
 	// 	this._temp!.tempMonth.forEach((t: number) => out += t)

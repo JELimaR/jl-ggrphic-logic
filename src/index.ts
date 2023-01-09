@@ -31,7 +31,7 @@ const listAzgaarFolders: IInitStateOption[] = [
   { folder: 'World10', area: 12100 },      // 4 es na cagada
 ];
 
-const selection: IInitStateOption = listAzgaarFolders[0];
+const selection: IInitStateOption = listAzgaarFolders[3];
 
 const tam = 3600;
 const SIZE: IPoint = { x: tam, y: tam / 2 };

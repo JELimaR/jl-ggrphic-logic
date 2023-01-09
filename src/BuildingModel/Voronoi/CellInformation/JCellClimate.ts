@@ -148,7 +148,7 @@ export default class JCellClimate extends JCellGeneric {
     else if (this.annualPrecip < 1.0 * this.pumbral) return 'B'; //if (this.annualPrecip < 1.2 * this.pumbral) return 'B';
     else if (this.tempMonthMin > 18) return 'A';
     else if (this.tempMonthMax >= 10 && this.tempMonthMin > 0) return 'C'
-    else if (this.tempMonthMax < 10) return 'E';
+    // else if (this.tempMonthMax < 10) return 'E';
     else return 'D'
   }
 

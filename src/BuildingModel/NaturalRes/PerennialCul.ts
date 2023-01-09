@@ -1,4 +1,4 @@
-export type TPerennialCulFamily = 'vid' | 'frutrsb' | 'citr' | 'frut' | 'ffri' | 'fole' | 'beb' | 'esp' | 'medfarm';
+export type TPerennialCulFamily = 'vid' | 'frutrsb' | 'citr' | 'frut' | 'ffri' | 'fole' | 'beb' | 'esp' | 'medfarm' | 'wat';
 
 export type TPerennialCulFamList<T> = {[key in TPerennialCulFamily]: T}
 
@@ -143,6 +143,21 @@ const MEDFARM: IPerennialCulLimits = {
   fexp: 0.8,
 }
 
+// wat  ############################################
+const WAT: IPerennialCulLimits = {
+  tAbsMin: -200,
+  tAbsMax: 200,
+  tMedMin: -2000,
+  tMedMax: 2000,
+  tAnnVar: 100,
+  wminmin: -1,
+  wminmax: 2,
+  wmin: 0,
+  wmax: 2,
+  wexp: 1.5,
+  fexp: 0,
+}
+
 export const PERENNIALCULFAMLIST: TPerennialCulFamList<IPerennialCulLimits> = {
   vid: VID,
   frutrsb: FRUTRSB,
@@ -153,4 +168,5 @@ export const PERENNIALCULFAMLIST: TPerennialCulFamList<IPerennialCulLimits> = {
   beb: BEB,
   esp: ESP,
   medfarm: MEDFARM,
+  wat: WAT
 }

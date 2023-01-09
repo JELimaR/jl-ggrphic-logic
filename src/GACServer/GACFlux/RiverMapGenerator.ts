@@ -10,6 +10,8 @@ import { getArrayOfN, heightParamToMeters } from "../../BuildingModel/Math/basic
 import { IRiverMapGeneratorOut } from "../../BuildingModel/INaturalMapCreator";
 import { FLUXLIMITPARAM } from "../constants";
 import JCellHeight from "../../BuildingModel/Voronoi/CellInformation/JCellHeight";
+import JEdge from "../../BuildingModel/Voronoi/JEdge";
+import MapController from "../../MapController";
 
 export default class RiverMapGenerator extends MapGenerator<IRiverMapGeneratorOut> {
 
@@ -251,9 +253,10 @@ export default class RiverMapGenerator extends MapGenerator<IRiverMapGeneratorOu
       const currV = river.vertices[idx];
       const currInfo = currV.info.vertexFlux;
       const prevInfo = prevV.info.vertexFlux;
+      const edge = this.diagram.getEdgeFromVertices(prevV, currV);
   
       for (let m = 1; m <= 12; m++) {
-        const currLevel = evalIndEdgeNavLevel(currV, prevV, m, this.diagram);
+        const currLevel = evalIndEdgeNavLevel(edge, m);
         currInfo.navLevelMonth[m-1] = Math.min(prevInfo.navLevelMonth[m-1], currLevel);
       }
     }
@@ -279,8 +282,10 @@ export default class RiverMapGenerator extends MapGenerator<IRiverMapGeneratorOu
  * @param currV 
  * @param month 
  */
-export const evalIndEdgeNavLevel = (currV: JVertex, prevV: JVertex, month: number, diagram: JDiagram): number => {
-  const edge = diagram.getEdgeFromVertices(prevV, currV);
+export const evalIndEdgeNavLevel = (edge: JEdge, month: number): number => {
+  // const edge = diagram.getEdgeFromVertices(prevV, currV);
+  const currV = edge.vertices[0];
+  const prevV = edge.vertices[0];
 
   const difH = Math.abs(heightParamToMeters(currV.info.height) - 
     heightParamToMeters(prevV.info.height));
@@ -292,8 +297,8 @@ export const evalIndEdgeNavLevel = (currV: JVertex, prevV: JVertex, month: numbe
     return 0;
   else 
     return Math.min(
-      evalIndVertexNavLevel(prevV, month, diagram),
-      evalIndVertexNavLevel(currV, month, diagram)
+      evalIndVertexNavLevel(prevV, month),
+      evalIndVertexNavLevel(currV, month)
     );
 }
 
@@ -302,9 +307,9 @@ export const evalIndEdgeNavLevel = (currV: JVertex, prevV: JVertex, month: numbe
  * @param vertex 
  * @param month 
  */
-export const evalIndVertexNavLevel = (vertex: JVertex, month: number, diagram: JDiagram): number => {  
+export const evalIndVertexNavLevel = (vertex: JVertex, month: number): number => {  
   let out: number = 0;
-  const VSIZE_FLUXLIMIT = diagram.vertices.size * FLUXLIMITPARAM;
+  const VSIZE_FLUXLIMIT = MapController.instance.naturalMap.diagram.vertices.size * FLUXLIMITPARAM;
   const flux = vertex.info.vertexFlux.monthFlux[month-1];
   const temp = vertex.info.vertexClimate.tempMonth[month-1];
   const heightMeters = heightParamToMeters(vertex.info.vertexHeight.height);

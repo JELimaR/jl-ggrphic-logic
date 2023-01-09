@@ -57,7 +57,7 @@ export class JCellISICAParams implements IISICCellParams {
 
   constructor(cell: JCell, diag: JDiagram) {
 
-    const wps = waterParamArr(cell, diag);
+    const wps = waterParamArr(cell);
     const fertFunc = NoiseMapValuesGenerator.fertFunc;
     const fishLevelNoiseFunc = NoiseMapValuesGenerator.fishLevelNoiseFunc;
 
@@ -71,7 +71,7 @@ export class JCellISICAParams implements IISICCellParams {
     this._fert = fertFunc(cell); // pfs
     this._rmin = Math.min(...wps.rp);  // f
     this._rmed = getMedValue(wps.rp);  // f
-    this._seasonal = this.getSeasonalCulMonthCellParams(cell, diag); // s
+    this._seasonal = this.getSeasonalCulMonthCellParams(cell); // s
     this._fluxArr = wps.fp; // w
     this._nLevel = fishLevelParam(cell, diag); // a
   }
@@ -121,7 +121,7 @@ export class JCellISICAParams implements IISICCellParams {
     return this._nLevel;
   }
 
-  private getSeasonalCulMonthCellParams(cell: JCell, diagram: JDiagram): ISeasonalCulMonthCellParams[] {
+  private getSeasonalCulMonthCellParams(cell: JCell): ISeasonalCulMonthCellParams[] {
     let out: ISeasonalCulMonthCellParams[] = [];
 
     const cc = cell.info.cellClimate;
@@ -130,7 +130,7 @@ export class JCellISICAParams implements IISICCellParams {
     const tMaxMatrix = this.getNConsecutiveMatrix(cc.tempMaxArr, N);
     const tMedMatrix = this.getNConsecutiveMatrix(cc.tempMonth, N);
 
-    const warr = waterParamArr(cell, diagram).wp;
+    const warr = waterParamArr(cell).wp;
     const wMatrix = this.getNConsecutiveMatrix(warr, N);
 
     for (let m = 1; m <= 12; m++) {

@@ -1,4 +1,4 @@
-export type TAquaFamily = 'marf' | 'rivf' | 'mara' | 'riva' | 'wat';
+export type TAquaFamily = 'marf' | 'rivf' | 'mara' | 'riva';
 
 export type TAquaFamList<T> = {[key in TAquaFamily]: T}
 
@@ -52,21 +52,10 @@ const RIVA: IAquaLimits = {
   xexp: 2.0,
   nlvlexp: 0.0,
 }
-// wat  ############################################
-const WAT: IAquaLimits = {
-  tabsmin: -50,
-  tabsmax: 50,
-  texp: 0.0,
-  fmin: 0.1,
-  fmax: 1.9,
-  xexp: 1,
-  nlvlexp: 0.0,
-}
 
 export const AQUAFAMLIST: TAquaFamList<IAquaLimits> = {
   marf: MARF,
   rivf: RIVF,
   mara: MARA,
   riva: RIVA,
-  wat: WAT
 }
